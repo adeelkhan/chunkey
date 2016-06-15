@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 
 """
 "Dumb" utility executables
@@ -17,6 +18,7 @@ def seconds_from_string(duration):
     seconds = float(duration.split(':')[2])
     duration_seconds = (((hours * 60) + minutes) * 60) + seconds
     return duration_seconds
+
 
 
 def status_bar(process):
@@ -56,3 +58,42 @@ def status_bar(process):
     sys.stdout.write('\r')
     sys.stdout.write("%s : [%-20s] %d%%" % ('Transcode', '='*20, 100))
     sys.stdout.flush()
+
+
+
+def probe_video(VideoFileObject):
+    """
+    Use ffprobe to determine facts about the video
+    """
+    ffprobe_comm = 'ffprobe -hide_banner ' + VideoFileObject.filepath
+
+    p = subprocess.Popen(
+        ffprobe_comm, 
+        stdout=subprocess.PIPE, 
+        stderr=subprocess.STDOUT, 
+        shell=True
+        )
+
+    for line in iter(p.stdout.readline, b''):
+        if "Duration: " in line:
+            ## Duration
+            vid_duration = line.split('Duration: ')[1].split(',')[0].strip()
+            VideoFileObject.duration = seconds_from_string(duration=vid_duration)
+            ## Bitrate
+            try:
+                VideoFileObject.bitrate = float(line.split('bitrate: ')[1].strip().split()[0])
+            except:
+                pass
+        elif "Stream #" in line and 'Video: ' in line:
+            codec_array = line.strip().split(',') 
+            for c in codec_array:
+                ## Resolution
+                if len(c.split('x')) == 2:
+                    if '[' not in c:
+                        VideoFileObject.mezz_resolution = c.strip()
+                    else:
+                        VideoFileObject.mezz_resolution = c.strip().split(' ')[0]
+    return VideoFileObject
+
+
+
