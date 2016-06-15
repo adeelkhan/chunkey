@@ -82,10 +82,43 @@ class HLS_Encode():
 
 
     def GENERATE(self):
-        for t in TRANSCODE_PROFILES:
+        for name, profile in TRANSCODE_PROFILES.iteritems():
+            print name
+            print 
+            print profile
+            print 
             self.ffcommand.append(self.mezz_file)
-            print self.ffcommand
 
+            """
+            Add Audio
+            """
+            self.ffcommand.append("-b:a")
+            self.ffcommand.append(profile['audio_depth'])
+            self.ffcommand.append("-ar")
+            self.ffcommand.append("44100")
+
+            """
+            Add codec
+            """
+            self.ffcommand.append("-c:v")
+            self.ffcommand.append("libx264")
+            
+            """
+            Add scaling / rate factor / framerate
+            """
+            self.ffcommand.append("-vf")
+            self.ffcommand.append("scale=" + profile['scale'])
+            self.ffcommand.append("-crf")
+            self.ffcommand.append(profile['rate_factor'])
+            self.ffcommand.append("-r")
+            self.ffcommand.append(profile['fps'])
+
+            """
+            Add 
+
+
+            print ' '.join([f for f in self.ffcommand])
+            self.ffcommand = ['ffmpeg -y -i']
             break
 
 
