@@ -1,12 +1,7 @@
 # ffmpeg -y -i /Users/tiagorodriguez/Desktop/HLS_testbed/TEST_VIDEO/XXXXXXXX2014-V000100.mov /Users/tiagorodriguez/Desktop/HLS_testbed/OUTPUT_TEST/XXXXXXXX2014-V000100.m3u8
 
 
-
-
-
-
-
-ffmpeg -y -i /Users/tiagorodriguez/Desktop/HLS_testbed/TEST_VIDEO/XXXXXXXXT114-V015600.mp4 -c:a aac -strict experimental -ac 2 -b:a 64k -ar 44100 -c:v libx264 -vf scale=1920:1080 -crf 18 -r 24 -g 72 -f hls -hls_time 9 -hls_list_size 0 -s 1920x1080 /Users/tiagorodriguez/Desktop/HLS_testbed/0/XXXXXXXX2015-V000700_.m3u8
+ffmpeg -y -i /Users/tiagorodriguez/Desktop/HLS_testbed/TEST_VIDEO/XXXXXXXXT114-V015600.mp4 -c:a aac -strict experimental -ac 2 -b:a 96k -ar 44100 -c:v libx264 -vf scale=1920:1080 -crf 18 -r 24 -g 72 -f hls -hls_time 9 -hls_list_size 0 -s 1920x1080 /Users/tiagorodriguez/Desktop/HLS_testbed/0/XXXXXXXX2015-V000700_.m3u8
 ffmpeg -y -i /Users/tiagorodriguez/Desktop/HLS_testbed/TEST_VIDEO/XXXXXXXXT114-V015600.mp4 -c:a aac -strict experimental -ac 2 -b:a 64k -ar 44100 -c:v libx264 -vf scale=1280:720 -crf 22 -r 24 -g 72 -f hls -hls_time 9 -hls_list_size 0 -s 1280x720 /Users/tiagorodriguez/Desktop/HLS_testbed/1/XXXXXXXX2015-V000700_.m3u8
 ffmpeg -y -i /Users/tiagorodriguez/Desktop/HLS_testbed/TEST_VIDEO/XXXXXXXXT114-V015600.mp4 -c:a aac -strict experimental -ac 2 -b:a 64k -ar 44100 -c:v libx264 -vf scale=960:540 -crf 24 -r 24 -g 72 -f hls -hls_time 9 -hls_list_size 0 -s 960x540 /Users/tiagorodriguez/Desktop/HLS_testbed/2/XXXXXXXX2015-V000700_.m3u8
 ffmpeg -y -i /Users/tiagorodriguez/Desktop/HLS_testbed/TEST_VIDEO/XXXXXXXXT114-V015600.mp4 -c:a aac -strict experimental -ac 2 -b:a 64k -ar 44100 -c:v libx264 -vf scale=640:360 -crf 26 -r 24 -g 72 -f hls -hls_time 9 -hls_list_size 0 -s 640x360 /Users/tiagorodriguez/Desktop/HLS_testbed/3/XXXXXXXX2015-V000700_.m3u8

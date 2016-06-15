@@ -60,4 +60,5 @@ class Settings():
             self.ACCESS_KEY_ID = data["AWS_ACCESS_KEY"]["ACCESS_KEY_ID"]
             self.SECRET_ACCESS_KEY = data["AWS_ACCESS_KEY"]["SECRET_ACCESS_KEY"]
 
-
+        self.deliver_bucket = kwargs.get('deliver_bucket', None)
+        self.deliver_directory = kwargs.get('deliver_directory', None)

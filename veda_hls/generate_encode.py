@@ -4,6 +4,9 @@ import os
 import sys
 import subprocess
 import fnmatch
+import boto
+import boto.s3
+from boto.s3.key import Key
 
 """
 Encode streams of input -> output for HLS five stream video
@@ -35,7 +38,14 @@ import util_functions
 class HLS_Command():
 
     def __init__(self, mezz_file, **kwargs):
-        self.settings = Settings()
+        """
+        TESTING ONLY
+        """
+        self.settings = Settings(
+            deliver_bucket = 'veda-testoutput',
+            deliver_directory = 'HLS_TEST'
+            )
+
         self.mezz_file = mezz_file
 
         self.encode_list = []
@@ -60,10 +70,10 @@ class HLS_Command():
         if not os.path.exists(self.video_root):
             os.mkdir(self.video_root)
 
-        # self._GENERATE_ENCODE()
-        # self._EXECUTE_ENCODE()
-        # self._MANIFEST_DATA()
-        # self._MANIFEST_GENERATE()
+        self._GENERATE_ENCODE()
+        self._EXECUTE_ENCODE()
+        self._MANIFEST_DATA()
+        self._MANIFEST_GENERATE()
         self._UPLOAD_TRANSPORT()
 
 
@@ -72,6 +82,15 @@ class HLS_Command():
         Generate ffmpeg commands into array by use in transcode function
 
         """
+        '''
+        # ffmpeg -y -i 
+        /Users/tiagorodriguez/Desktop/HLS_testbed/TEST_VIDEO/HARSPU27T313-V043500_DTH.mp4 
+        -c:a aac -strict experimental -ac 2 -b:a 96k -ar 44100 
+        -c:v libx264 -pix_fmt yuv420p -profile:v main -level 3.2 -maxrate 2M -bufsize 6M 
+        -crf 18 -r 24 -g 72 -f hls -hls_time 9 -hls_list_size 0 -s 1280x720 
+        /Users/tiagorodriguez/Desktop/HLS_testbed/OUTPUT_TEST/1280x720.m3u8
+        
+        '''
         for profile_name, profile in self.settings.TRANSCODE_PROFILES.iteritems():
             ffcommand = ['ffmpeg -y -i']
             ffcommand.append(self.mezz_file)
@@ -79,6 +98,7 @@ class HLS_Command():
             """
             Add Audio
             """
+            ffcommand.append("-c:a aac -strict experimental -ac 2")
             ffcommand.append("-b:a")
             ffcommand.append(profile['audio_depth'])
             ffcommand.append("-ar")
@@ -87,6 +107,7 @@ class HLS_Command():
             """
             Add codec
             """
+            ffcommand.append("-pix_fmt yuv420p -profile:v main -level 3.2 -maxrate 2M -bufsize 6M")
             ffcommand.append("-c:v")
             ffcommand.append("libx264")
             
@@ -116,10 +137,10 @@ class HLS_Command():
             """
             Add output files
             """
-            if not os.path.exists(os.path.join(self.video_root, profile_name)):
-                os.mkdir(os.path.join(self.video_root, profile_name))
-            destination = os.path.join(self.video_root, profile_name, self.video_id)
-            destination += profile_name
+            # if not os.path.exists(os.path.join(self.video_root, profile_name)):
+            #     os.mkdir(os.path.join(self.video_root, profile_name))
+            destination = os.path.join(self.video_root, self.video_id)
+            destination += '_' + profile_name + '_'
             destination += ".m3u8"
 
             ffcommand.append(destination)
@@ -158,13 +179,16 @@ class HLS_Command():
         return None
 
 
-    def _DETERMINE_BANDWIDTH(self, transport_dir):
+    def _DETERMINE_BANDWIDTH(self, profile_name):
 
         max_bandwidth = 0.0
 
-        for file in os.listdir(transport_dir):
-            if fnmatch.fnmatch(file, '*.ts'):
-                bandwidth = float(os.stat(os.path.join(transport_dir, file)).st_size) / 9
+        """this is crappy"""
+        for file in os.listdir(self.video_root):
+            if fnmatch.fnmatch(file, '*.ts') \
+            and fnmatch.fnmatch(file, '_'.join((self.video_id, profile_name, '*'))):
+
+                bandwidth = float(os.stat(os.path.join(self.video_root, file)).st_size) / 9
                 if bandwidth > max_bandwidth:
                     max_bandwidth = bandwidth
 
@@ -185,9 +209,10 @@ class HLS_Command():
             self.bandwidth = None
             self.resolution = None
             self.ts_manifest = None
+
         '''
         MANIFEST : 
-        https://s3.amazonaws.com/veda-testoutput/HLS_TEST/XXXXXXXX2015-V000700_.m3u8
+        NOTE -- this doesn't seem to work with directories in S3
 
         #EXTM3U
         #EXT-X-STREAM-INF:BANDWIDTH=192000,RESOLUTION=320x180
@@ -199,41 +224,24 @@ class HLS_Command():
         #EXT-X-STREAM-INF:BANDWIDTH=2000000,RESOLUTION=1280x720
         OUTPUT_TEST/XXXXXXXX2015-V000700_.m3u8
 
-        #EXTM3U
-        #EXT-X-STREAM-INF:BANDWIDTH=2431759,RESOLUTION=1920x1080
-        0/XXXXXXXXT114-V015600.m3u8
-        #EXT-X-STREAM-INF:BANDWIDTH=293196,RESOLUTION=1280x720
-        1/XXXXXXXXT114-V015600.m3u8
-        #EXT-X-STREAM-INF:BANDWIDTH=149773,RESOLUTION=960x540
-        2/XXXXXXXXT114-V015600.m3u8
-        #EXT-X-STREAM-INF:BANDWIDTH=70437,RESOLUTION=640x360
-        3/XXXXXXXXT114-V015600.m3u8
-        #EXT-X-STREAM-INF:BANDWIDTH=40837,RESOLUTION=640x360
-        4/XXXXXXXXT114-V015600.m3u8
-
         '''
-        ## Write file headers
-        for d in os.listdir(self.video_root):
-            if os.path.isdir(os.path.join(self.video_root, d)):
-                T1 = TransportStream()
-
-                """
-                Bandwidth
-                """
-                T1.bandwidth = int(self._DETERMINE_BANDWIDTH(
-                    transport_dir=os.path.join(self.video_root, d)
-                    ))
-                """
-                resolution
-                """
-                T1.resolution = self.settings.TRANSCODE_PROFILES[d]['scale'].replace(':', 'x')
-                """
-                TS manifest
-                """
-                for file in os.listdir(os.path.join(self.video_root, d)):
-                    if fnmatch.fnmatch(file, '*.m3u8'):
-                        T1.ts_manifest = '/'.join((d, file))
-                self.manifest_data.append(T1)
+        for profile_name, profile in self.settings.TRANSCODE_PROFILES.iteritems():
+            T1 = TransportStream()
+            """
+            TS manifest
+            """
+            T1.ts_manifest = self.video_id
+            T1.ts_manifest += '_' + profile_name + '_'
+            T1.ts_manifest += ".m3u8"
+            """
+            Bandwidth
+            """
+            T1.bandwidth = int(self._DETERMINE_BANDWIDTH(profile_name=profile_name))
+            """
+            resolution
+            """
+            T1.resolution = self.settings.TRANSCODE_PROFILES[profile_name]['scale'].replace(':', 'x')
+            self.manifest_data.append(T1)
 
         return None
 
@@ -248,7 +256,7 @@ class HLS_Command():
         # print self.manifest_data
             m1.write('\n')
             for m in self.manifest_data:
-                m1.write('#EXT-X-STREAM-INF:BANDWIDTH=')
+                m1.write('#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=')
                 m1.write(str(m.bandwidth))
                 m1.write(',')
                 m1.write('RESOLUTION=')
@@ -263,44 +271,45 @@ class HLS_Command():
 
     def _UPLOAD_TRANSPORT(self):
         """
-        **NOTE : we won't bother with multipart upload operations
-        here, as this should NEVER be that big. 
-        It's settings.HLS_TIME (default=9) seconds of a squashed file,
-        so if you're above 5gB, you're from the future, 
-        and you should be doing something else or outside 
-        playing with your jetpack above the sunken city of Miami
+        **NOTE**
+        We won't bother with multipart upload operations here, 
+        as this should NEVER be that big. We're uploading ${settings.HLS_TIME} (default=9) 
+        seconds of a squashed file, so if you're above 5gB, you're from the future, 
+        and you should be doing something else or outside playing with your jetpack 
+        above the sunken city of Miami
+
 
         Upload single part
         """
-        print self.settings.ACCESS_KEY_ID
+        conn = boto.connect_s3(
+            self.settings.ACCESS_KEY_ID,
+            self.settings.SECRET_ACCESS_KEY
+            )
+        delv_bucket = conn.get_bucket(self.settings.deliver_bucket)
+
+        """
+        TODO: Set this to be the video ID on key upload
+        """
+        for ts1 in os.listdir(self.video_root):
+            print ts1
+            upload_key = Key(delv_bucket)
+            upload_key.key = '/'.join((self.settings.deliver_directory, ts1))
+            """
+            Actually upload the thing
+            """
+            upload_key.set_contents_from_filename(
+                os.path.join(self.video_root, ts1)
+                )
+            upload_key.set_acl('public-read')
+
+        return True
 
 
-        # try:
-        #     conn = boto.connect_s3(
-        #         self.Settings.DELIVERY_ID, 
-        #         self.Settings.DELIVERY_PASS
-        #         )
-        #     delv_bucket = conn.get_bucket(self.Settings.DELIVERY_ENDPOINT)
-        # except:
-        #     ErrorObject(
-        #         method = self,
-        #         message = 'Deliverable Fail: s3 Connection Error\n \
-        #         Check node_config DELIVERY_ENDPOINT'
-        #         )
-        #     return False
-        # b.set_acl('public-read')
-
-        # upload_key = Key(delv_bucket)
-        # upload_key.key = self.EncodeObject.output_file.split('/')[-1]
-        # upload_key.set_contents_from_filename(self.EncodeObject.output_file)
-        # return True
-
-
-
-        pass
 
     def _PASS_DATA(self):
         pass
+
+
 
     def _CLEAN_WORKDIR(self):
         pass
@@ -313,9 +322,13 @@ def main():
 
     HE = HLS_Command(
         mezz_file = "/Users/tiagorodriguez/Desktop/HLS_testbed/TEST_VIDEO/XXXXXXXXT114-V015600.mp4",
-        manifest = "XXXXXXXX2015-V000700_0.m3u8"
+        manifest = "XXXXXXXX2015-V000700_0.m3u8",
         )
     HE.run()
+
+
+
+    ##         https://s3.amazonaws.com/veda-testoutput/HLS_TEST/XXXXXXXX2015-V000700_.m3u8
 
 
 
