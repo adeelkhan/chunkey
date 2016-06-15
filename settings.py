@@ -1,10 +1,13 @@
 import os
 import sys
+import json
 
 """
 globals
 
 """
+
+
 
 class Settings():
 
@@ -49,3 +52,12 @@ class Settings():
                 'fps' : "29.97",
             },
         }
+
+        self.aws_keys = kwargs.get('aws_keyfile', os.path.join(os.path.dirname(__file__), 'aws_keys.json'))
+
+        with open(self.aws_keys) as data_file:
+            data = json.load(data_file)
+            self.ACCESS_KEY_ID = data["AWS_ACCESS_KEY"]["ACCESS_KEY_ID"]
+            self.SECRET_ACCESS_KEY = data["AWS_ACCESS_KEY"]["SECRET_ACCESS_KEY"]
+
+

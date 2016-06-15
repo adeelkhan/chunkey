@@ -62,8 +62,9 @@ class HLS_Command():
 
         # self._GENERATE_ENCODE()
         # self._EXECUTE_ENCODE()
-        self._MANIFEST_DATA()
-        self._MANIFEST_GENERATE()
+        # self._MANIFEST_DATA()
+        # self._MANIFEST_GENERATE()
+        self._UPLOAD_TRANSPORT()
 
 
     def _GENERATE_ENCODE(self):
@@ -183,7 +184,7 @@ class HLS_Command():
         class TransportStream():
             self.bandwidth = None
             self.resolution = None
-            self.manifest = None
+            self.ts_manifest = None
         '''
         MANIFEST : 
         https://s3.amazonaws.com/veda-testoutput/HLS_TEST/XXXXXXXX2015-V000700_.m3u8
@@ -197,6 +198,19 @@ class HLS_Command():
         OUTPUT_TEST/XXXXXXXX2015-V000700_.m3u8
         #EXT-X-STREAM-INF:BANDWIDTH=2000000,RESOLUTION=1280x720
         OUTPUT_TEST/XXXXXXXX2015-V000700_.m3u8
+
+        #EXTM3U
+        #EXT-X-STREAM-INF:BANDWIDTH=2431759,RESOLUTION=1920x1080
+        0/XXXXXXXXT114-V015600.m3u8
+        #EXT-X-STREAM-INF:BANDWIDTH=293196,RESOLUTION=1280x720
+        1/XXXXXXXXT114-V015600.m3u8
+        #EXT-X-STREAM-INF:BANDWIDTH=149773,RESOLUTION=960x540
+        2/XXXXXXXXT114-V015600.m3u8
+        #EXT-X-STREAM-INF:BANDWIDTH=70437,RESOLUTION=640x360
+        3/XXXXXXXXT114-V015600.m3u8
+        #EXT-X-STREAM-INF:BANDWIDTH=40837,RESOLUTION=640x360
+        4/XXXXXXXXT114-V015600.m3u8
+
         '''
         ## Write file headers
         for d in os.listdir(self.video_root):
@@ -206,9 +220,9 @@ class HLS_Command():
                 """
                 Bandwidth
                 """
-                T1.bandwidth = self._DETERMINE_BANDWIDTH(
+                T1.bandwidth = int(self._DETERMINE_BANDWIDTH(
                     transport_dir=os.path.join(self.video_root, d)
-                    )
+                    ))
                 """
                 resolution
                 """
@@ -218,7 +232,7 @@ class HLS_Command():
                 """
                 for file in os.listdir(os.path.join(self.video_root, d)):
                     if fnmatch.fnmatch(file, '*.m3u8'):
-                        T1.manifest = '/'.join((d, file))
+                        T1.ts_manifest = '/'.join((d, file))
                 self.manifest_data.append(T1)
 
         return None
@@ -226,24 +240,63 @@ class HLS_Command():
 
 
     def _MANIFEST_GENERATE(self):
+        print self.manifest
+        print self.video_root
+        print os.path.join(self.video_root, self.manifest)
         with open(os.path.join(self.video_root, self.manifest), 'w') as m1:
             m1.write('#EXTM3U')
+        # print self.manifest_data
             m1.write('\n')
             for m in self.manifest_data:
                 m1.write('#EXT-X-STREAM-INF:BANDWIDTH=')
-                m1.write(m.bandwidth)
+                m1.write(str(m.bandwidth))
                 m1.write(',')
                 m1.write('RESOLUTION=')
                 m1.write(m.resolution)
                 m1.write('\n')
-                m1.write(m.manifest)
+                m1.write(m.ts_manifest)
                 m1.write('\n')
 
         return None
 
 
 
-    def _UPLOAD(self):
+    def _UPLOAD_TRANSPORT(self):
+        """
+        **NOTE : we won't bother with multipart upload operations
+        here, as this should NEVER be that big. 
+        It's settings.HLS_TIME (default=9) seconds of a squashed file,
+        so if you're above 5gB, you're from the future, 
+        and you should be doing something else or outside 
+        playing with your jetpack above the sunken city of Miami
+
+        Upload single part
+        """
+        print self.settings.ACCESS_KEY_ID
+
+
+        # try:
+        #     conn = boto.connect_s3(
+        #         self.Settings.DELIVERY_ID, 
+        #         self.Settings.DELIVERY_PASS
+        #         )
+        #     delv_bucket = conn.get_bucket(self.Settings.DELIVERY_ENDPOINT)
+        # except:
+        #     ErrorObject(
+        #         method = self,
+        #         message = 'Deliverable Fail: s3 Connection Error\n \
+        #         Check node_config DELIVERY_ENDPOINT'
+        #         )
+        #     return False
+        # b.set_acl('public-read')
+
+        # upload_key = Key(delv_bucket)
+        # upload_key.key = self.EncodeObject.output_file.split('/')[-1]
+        # upload_key.set_contents_from_filename(self.EncodeObject.output_file)
+        # return True
+
+
+
         pass
 
     def _PASS_DATA(self):
