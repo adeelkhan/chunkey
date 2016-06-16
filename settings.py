@@ -11,11 +11,14 @@ globals
 class Settings():
 
     def __init__(self, **kwargs):
+
+        ## encode directory
         self.WORKDIR = kwargs.get(
             'work_dir', 
             os.path.join(os.path.dirname(__file__), 'WORKDIR')
             )
 
+        ## encode switching target length
         self.HLS_TIME = kwargs.get('hls_time', 9)
 
         ## TODO: redo this
