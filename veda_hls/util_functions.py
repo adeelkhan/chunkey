@@ -90,9 +90,9 @@ def probe_video(VideoFileObject):
                 ## Resolution
                 if len(c.split('x')) == 2:
                     if '[' not in c:
-                        VideoFileObject.mezz_resolution = c.strip()
+                        VideoFileObject.resolution = c.strip()
                     else:
-                        VideoFileObject.mezz_resolution = c.strip().split(' ')[0]
+                        VideoFileObject.resolution = c.strip().split(' ')[0]
     return VideoFileObject
 
 

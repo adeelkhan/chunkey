@@ -8,7 +8,6 @@ globals
 """
 
 
-
 class Settings():
 
     def __init__(self, **kwargs):
@@ -52,6 +51,7 @@ class Settings():
                 'fps' : "29.97",
             },
         }
+        self.TARGET_ASPECT_RATIO = float(16) / float(9)
 
         self.aws_keys = kwargs.get('aws_keyfile', os.path.join(os.path.dirname(__file__), 'aws_keys.json'))
 
@@ -59,6 +59,5 @@ class Settings():
             data = json.load(data_file)
             self.ACCESS_KEY_ID = data["AWS_ACCESS_KEY"]["ACCESS_KEY_ID"]
             self.SECRET_ACCESS_KEY = data["AWS_ACCESS_KEY"]["SECRET_ACCESS_KEY"]
-
-        self.deliver_bucket = kwargs.get('deliver_bucket', None)
-        self.deliver_directory = kwargs.get('deliver_directory', None)
+            self.DELIVER_BUCKET = data["AWS_DEFAULTS"]["DELIVER_BUCKET"]
+            self.DELIVER_ROOT = data["AWS_DEFAULTS"]["DELIVER_ROOT"]
