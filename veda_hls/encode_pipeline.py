@@ -69,9 +69,9 @@ class HLS_Pipeline():
         self._EXECUTE_ENCODE()
         self._MANIFEST_DATA()
         self._MANIFEST_GENERATE()
-        self._UPLOAD_TRANSPORT()
+        # self._UPLOAD_TRANSPORT()
 
-        self._CLEAN_WORKDIR()
+        # self._CLEAN_WORKDIR()
         return True
 
 
@@ -402,28 +402,9 @@ class HLS_Pipeline():
 
 
 
-
-
 def main():
-
-    HE = HLS_Pipeline(
-        mezz_file = "/Users/tiagorodriguez/Desktop/HLS_testbed/TEST_VIDEO/XXXXXXXXT114-V015600.mp4",
-        manifest = "XXXXXXXX2015-V000700_.m3u8",
-        )
-    HE.run()
-
-
+    pass
 
 if __name__ == '__main__':
     sys.exit(main())
-
-
-
-
-
-
-
-
-
-
 

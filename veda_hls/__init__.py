@@ -24,6 +24,9 @@ class VEDA_HLS():
             mezz_file=self.mezz_file
             )
         if self.manifest != None:
+            if '.m3u8' not in self.manifest:
+                self.manifest += '.m3u8'
+
             EP.manifest = self.manifest
 
         EP.run()
@@ -53,6 +56,7 @@ def main():
     if len(args.mezz_file) == 0:
         print 'ERROR : No video file specified'
         return 1
+
     V1 = VEDA_HLS(
         mezz_file=args.mezz_file,
         manifest=args.manifest
