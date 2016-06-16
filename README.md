@@ -4,8 +4,15 @@
 
 #THIS IS STILL BEING BUILT
 
-[ ] playlist testing
+[X] playlist testing
 
-[ ] manifest testing
+[x] manifest testing
 
-[ ] json keys
+[x] json keys
+
+Later todos:
+[ ] Video ID Generation
+[ ] API Data pushing
+    [ ] VAL
+    [ ] VEDA
+
