@@ -2,4 +2,3 @@
 WORKDIR/
 *.pyc
 
-aws_keys.json

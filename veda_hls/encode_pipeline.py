@@ -9,6 +9,8 @@ import boto.s3
 from boto.s3.key import Key
 import shutil
 
+boto.config.add_section('Boto') 
+boto.config.set('Boto','http_socket_timeout','10') 
 
 """
 Encode streams of input -> output for HLS five stream video
@@ -18,7 +20,6 @@ NOTE: Just a test, so will need greater looking into
 Generate master manifest, upload (easy, via boto) to output bucket
 
 """
-
 
 '''
 ffmpeg command :
