@@ -69,9 +69,9 @@ class HLS_Pipeline():
         self._EXECUTE_ENCODE()
         self._MANIFEST_DATA()
         self._MANIFEST_GENERATE()
-        # self._UPLOAD_TRANSPORT()
+        self._UPLOAD_TRANSPORT()
 
-        # self._CLEAN_WORKDIR()
+        self._CLEAN_WORKDIR()
         return True
 
 
