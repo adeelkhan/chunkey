@@ -53,11 +53,39 @@ class Settings():
         }
         self.TARGET_ASPECT_RATIO = float(16) / float(9)
 
-        self.aws_keys = kwargs.get('aws_keyfile', os.path.join(os.path.dirname(__file__), 'aws_keys.json'))
+        """
+        Key information
 
-        with open(self.aws_keys) as data_file:
+        """
+        self.access_keys = kwargs.get('aws_keyfile', os.path.join(os.path.dirname(__file__), 'access_keys.json'))
+
+        with open(self.access_keys) as data_file:
             data = json.load(data_file)
-            self.ACCESS_KEY_ID = data["AWS_ACCESS_KEY"]["ACCESS_KEY_ID"]
-            self.SECRET_ACCESS_KEY = data["AWS_ACCESS_KEY"]["SECRET_ACCESS_KEY"]
-            self.DELIVER_BUCKET = data["AWS_DEFAULTS"]["DELIVER_BUCKET"]
-            self.DELIVER_ROOT = data["AWS_DEFAULTS"]["DELIVER_ROOT"]
+        """
+        AWS s3 information
+        """
+        self.ACCESS_KEY_ID = kwargs.get(
+            'ACCESS_KEY_ID', 
+            data["AWS_KEYS"]["ACCESS_KEY_ID"]
+            )
+        self.SECRET_ACCESS_KEY = kwargs.get(
+            'SECRET_ACCESS_KEY', 
+            data["AWS_KEYS"]["SECRET_ACCESS_KEY"]
+            )
+        self.DELIVER_BUCKET = kwargs.get(
+            'DELIVER_BUCKET', 
+            data["AWS_DEFAULTS"]["DELIVER_BUCKET"]
+            )
+        self.DELIVER_ROOT = kwargs.get(
+            'DELIVER_ROOT', 
+            data["AWS_DEFAULTS"]["DELIVER_ROOT"]
+            )
+
+        """
+        VAL information
+        """
+
+        """
+        VEDA information
+        """
+
