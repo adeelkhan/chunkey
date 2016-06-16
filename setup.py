@@ -13,6 +13,7 @@ setup(
     author_email='greg@willowgrain.io',
     license='',
     packages=['veda_hls'],
+    include_package_data=True
     install_requires=[
         'boto',
         'requests',
