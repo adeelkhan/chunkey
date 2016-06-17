@@ -15,6 +15,8 @@ from encode_pipeline import HLS_Pipeline
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from settings import Settings
 
+import util_functions
+
 
 class TestEncodePipeline(unittest.TestCase):
     def test_command_gen(self):
@@ -35,6 +37,7 @@ class TestEncodePipeline(unittest.TestCase):
             len(self.Pipeline.settings.TRANSCODE_PROFILES), 
             len(self.Pipeline.encode_list)
             )
+        return self
 
 
 class TestFFMPEGCompile(unittest.TestCase):
@@ -59,7 +62,7 @@ class TestFFMPEGCompile(unittest.TestCase):
             "usage: ffprobe [OPTIONS] [INPUT_FILE]" in [ l for l in probe_commands ]
             )
 
-
+@unittest.skip("AWS Credentialing")
 class TestAWSCredentials(unittest.TestCase):
     """
     Check settings, connect to AWS
@@ -93,8 +96,15 @@ class TestAWSCredentials(unittest.TestCase):
 
 
 def main():
+    util_functions.log_results(
+        'VEDA HLS Test', False
+        )
     unittest.main()
 
 
 if __name__ == '__main__':
     sys.exit(main())
+
+
+
+

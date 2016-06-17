@@ -46,7 +46,7 @@ Use (crawler)
     from veda_hls import VEDA_HLS
 
     VEDA_HLS(
-        crawler=True
+        crawl=True
         crawl_bucket='aws_s3_bucketname'
         crawl_root='optional/bucketdir'
         )

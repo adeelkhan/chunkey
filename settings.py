@@ -18,6 +18,8 @@ class Settings():
             os.path.join(os.path.dirname(__file__), 'WORKDIR')
             )
 
+        self.LOG_FILE = os.path.join(os.path.dirname(__file__), 'log.out')
+
         ## encode switching target length
         self.HLS_TIME = kwargs.get('hls_time', 9)
 

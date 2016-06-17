@@ -13,11 +13,11 @@ setup(
     author_email='greg@willowgrain.io',
     license='',
     packages=['veda_hls'],
-    include_package_data=True
+    include_package_data=True,
     install_requires=[
         'boto',
         'requests',
-        ]
+        ],
     test_suite='nose.collector',
     tests_require=['nose'],
     zip_safe=False
