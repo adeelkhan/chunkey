@@ -1,11 +1,23 @@
 import os
 import sys
 import subprocess
+import datetime
 
 """
 "Dumb" utility executables
 
 """
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from settings import Settings
+settings = Settings()
+
+
+def log_results(message, result):
+    with open(settings.LOG_FILE, 'a') as l1:
+        l1.write('%s %s %s %s' % ('[', str(datetime.datetime.now()), ']', ' '))
+        l1.write('%s : %r' % (message, result))
+        l1.write('\n')
+    return None
 
 
 def seconds_from_string(duration):
@@ -20,13 +32,11 @@ def seconds_from_string(duration):
     return duration_seconds
 
 
-
 def status_bar(process):
     """
     This is a little gross, but it'll get us a status bar
 
     """
-
     fps = None
     duration = None
     while True:
@@ -58,7 +68,7 @@ def status_bar(process):
     sys.stdout.write('\r')
     sys.stdout.write("%s : [%-20s] %d%%" % ('Transcode', '='*20, 100))
     sys.stdout.flush()
-
+    print ''
 
 
 def probe_video(VideoFileObject):
@@ -96,4 +106,6 @@ def probe_video(VideoFileObject):
     return VideoFileObject
 
 
+if __name__ == '__main__':
+    log_results('Test', True)
 

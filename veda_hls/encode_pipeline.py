@@ -9,7 +9,10 @@ import boto.s3
 from boto.s3.key import Key
 import shutil
 
-boto.config.add_section('Boto') 
+try:
+    boto.config.add_section('Boto') 
+except:
+    pass
 boto.config.set('Boto','http_socket_timeout','10') 
 
 """
@@ -38,20 +41,18 @@ import util_functions
 class HLS_Pipeline():
 
     def __init__(self, mezz_file, **kwargs):
-
-        self.settings = Settings()
+        self.settings = kwargs.get('settings', Settings())
 
         self.mezz_file = mezz_file
         self.encode_list = []
         self.video_id = kwargs.get(
-            'video_id', mezz_file.split('/')[-1].split('.')[0]
+            'video_id', os.path.basename(self.mezz_file).split('.')[0]
             )
         self.video_root = os.path.join(self.settings.WORKDIR, self.video_id)
 
         self.manifest = kwargs.get('manifest', self.video_id + '.m3u8')
         self.manifest_data = []
-
-        self.completed_encodes = []
+        self.manifest_url = None
 
 
     def run(self):
@@ -70,7 +71,14 @@ class HLS_Pipeline():
         self._EXECUTE_ENCODE()
         self._MANIFEST_DATA()
         self._MANIFEST_GENERATE()
-        self._UPLOAD_TRANSPORT()
+        self.file_delivered = self._UPLOAD_TRANSPORT()
+
+        if self.settings.LOG_RESULTS is True:
+            util_functions.log_results(
+                message='%s : %s' % ('MEZZ : ', os.path.basename(self.mezz_file)), 
+                complete=True
+                )
+
 
         self._CLEAN_WORKDIR()
         return True
@@ -244,14 +252,28 @@ class HLS_Pipeline():
             """ 
             get vid info, gen status
             """
-            util_functions.status_bar(process=process)
+            if self.settings.LOG_RESULTS is False:
+                util_functions.status_bar(process=process)
+
 
             if os.path.exists(output_file):
                 """
                 We'll let this fail quietly
                 """
-                self.completed_encodes.append(output_file) 
-            print ''
+                # self.completed_encodes.append(output_file)
+
+                if self.settings.LOG_RESULTS is True:
+                    util_functions.log_results(
+                        message=os.path.basename(output_file), 
+                        complete=True
+                        )
+            else:
+                if self.settings.LOG_RESULTS is True:
+                    util_functions.log_results(
+                        message=os.path.basename(output_file), 
+                        complete=False
+                        )
+
         return None
 
 
@@ -270,13 +292,6 @@ class HLS_Pipeline():
                 if bandwidth > max_bandwidth:
                     max_bandwidth = bandwidth
 
-        ## THIS CALCULATES FROM BITRATE AS PRESENTED IN FFPROBE
-        #         VideoFileObject = VideoFile(
-        #             filepath = os.path.join(transport_dir, file)
-        #             )
-        #         util_functions.probe_video(VideoFileObject=VideoFileObject)
-        #         if VideoFileObject.bitrate > max_bitrate:
-        #             max_bitrate = VideoFileObject.bitrate
         return max_bandwidth
 
 
@@ -326,12 +341,10 @@ class HLS_Pipeline():
 
 
     def _MANIFEST_GENERATE(self):
-        print self.manifest
-        print self.video_root
-        print os.path.join(self.video_root, self.manifest)
+
         with open(os.path.join(self.video_root, self.manifest), 'w') as m1:
             m1.write('#EXTM3U')
-        # print self.manifest_data
+
             m1.write('\n')
             for m in self.manifest_data:
                 m1.write('#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=')
@@ -370,7 +383,6 @@ class HLS_Pipeline():
         """
         for transport_stream in os.listdir(self.video_root):
             if not fnmatch.fnmatch(transport_stream, ".*"):
-                print transport_stream
                 upload_key = Key(delv_bucket)
                 upload_key.key = '/'.join((
                     self.settings.DELIVER_ROOT, 
@@ -383,7 +395,21 @@ class HLS_Pipeline():
                 upload_key.set_contents_from_filename(
                     os.path.join(self.video_root, transport_stream)
                     )
+
                 upload_key.set_acl('public-read')
+
+        if self.settings.DELIVER_ROOT != None:
+            self.manifest_url = '/'.join((
+                self.settings.DELIVER_BUCKET,
+                self.settings.DELIVER_ROOT,
+                self.manifest
+                ))
+
+        else:
+            self.manifest_url = '/'.join((
+                self.settings.DELIVER_BUCKET,
+                self.manifest
+                ))
 
         return True
 
