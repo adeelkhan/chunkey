@@ -35,7 +35,7 @@ Use (one-off):
 
     VEDA_HLS(
         mezz_file='link_to/file/to_be/transcoded.mp4'
-        manifest='optional_manifest_name'
+        manifest='manifest_name' ## optional
         )
 
 Use (crawler)
@@ -48,20 +48,20 @@ Use (crawler)
     VEDA_HLS(
         crawl=True
         crawl_bucket='aws_s3_bucketname'
-        crawl_root='optional/bucketdir'
+        crawl_root=bucketdir' ## optional
         )
 
-| **TODO**:
-| [ ] CRAWL
+
+
+**TODO**:
+
+[ ] CRAWL
 
 [ ] JSON setup scripting
 
 [ ] Video ID Generation
 
 [ ] API Data pushing
-
 ::
-
     [ ] VAL  
-
     [ ] VEDA  

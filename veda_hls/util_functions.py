@@ -68,6 +68,7 @@ def status_bar(process):
     sys.stdout.write('\r')
     sys.stdout.write("%s : [%-20s] %d%%" % ('Transcode', '='*20, 100))
     sys.stdout.flush()
+    print ''
 
 
 def probe_video(VideoFileObject):

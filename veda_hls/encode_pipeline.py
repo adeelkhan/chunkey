@@ -9,7 +9,10 @@ import boto.s3
 from boto.s3.key import Key
 import shutil
 
-boto.config.add_section('Boto') 
+try:
+    boto.config.add_section('Boto') 
+except:
+    pass
 boto.config.set('Boto','http_socket_timeout','10') 
 
 """
@@ -38,18 +41,17 @@ import util_functions
 class HLS_Pipeline():
 
     def __init__(self, mezz_file, **kwargs):
-        self.settings = Settings()
+        self.settings = kwargs.get('settings', Settings())
 
         self.mezz_file = mezz_file
         self.encode_list = []
         self.video_id = kwargs.get(
-            'video_id', mezz_file.split('/')[-1].split('.')[0]
+            'video_id', os.path.basename(self.mezz_file).split('.')[0]
             )
         self.video_root = os.path.join(self.settings.WORKDIR, self.video_id)
 
         self.manifest = kwargs.get('manifest', self.video_id + '.m3u8')
-        self.log_results = kwargs.get('log_results', False)
-
+        
         self.manifest_data = []
         self.completed_encodes = []
 
@@ -71,7 +73,8 @@ class HLS_Pipeline():
         self._MANIFEST_DATA()
         self._MANIFEST_GENERATE()
         self.file_delivered = self._UPLOAD_TRANSPORT()
-        if self.log_results is True:
+
+        if self.settings.LOG_RESULTS is True:
             util_functions.log_results(
                 message='%s : %s' % ('MEZZ : ', os.path.basename(self.mezz_file)), 
                 complete=True
@@ -250,7 +253,7 @@ class HLS_Pipeline():
             """ 
             get vid info, gen status
             """
-            if self.log_results is False:
+            if self.settings.LOG_RESULTS is False:
                 util_functions.status_bar(process=process)
 
 
@@ -260,13 +263,13 @@ class HLS_Pipeline():
                 """
                 self.completed_encodes.append(output_file)
 
-                if self.log_results is True:
+                if self.settings.LOG_RESULTS is True:
                     util_functions.log_results(
                         message=os.path.basename(output_file), 
                         complete=True
                         )
             else:
-                if self.log_results is True:
+                if self.settings.LOG_RESULTS is True:
                     util_functions.log_results(
                         message=os.path.basename(output_file), 
                         complete=False
