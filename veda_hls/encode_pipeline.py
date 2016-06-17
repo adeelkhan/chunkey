@@ -51,9 +51,8 @@ class HLS_Pipeline():
         self.video_root = os.path.join(self.settings.WORKDIR, self.video_id)
 
         self.manifest = kwargs.get('manifest', self.video_id + '.m3u8')
-        
         self.manifest_data = []
-        self.completed_encodes = []
+        self.manifest_url = None
 
 
     def run(self):
@@ -261,7 +260,7 @@ class HLS_Pipeline():
                 """
                 We'll let this fail quietly
                 """
-                self.completed_encodes.append(output_file)
+                # self.completed_encodes.append(output_file)
 
                 if self.settings.LOG_RESULTS is True:
                     util_functions.log_results(
@@ -396,7 +395,21 @@ class HLS_Pipeline():
                 upload_key.set_contents_from_filename(
                     os.path.join(self.video_root, transport_stream)
                     )
+
                 upload_key.set_acl('public-read')
+
+        if self.settings.DELIVER_ROOT != None:
+            self.manifest_url = '/'.join((
+                self.settings.DELIVER_BUCKET,
+                self.settings.DELIVER_ROOT,
+                self.manifest
+                ))
+
+        else:
+            self.manifest_url = '/'.join((
+                self.settings.DELIVER_BUCKET,
+                self.manifest
+                ))
 
         return True
 

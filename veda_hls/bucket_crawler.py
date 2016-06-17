@@ -1,5 +1,6 @@
 import os
 import sys
+import fnmatch
 import boto
 import boto.s3
 from boto.s3.key import Key
@@ -50,6 +51,8 @@ class Crawler():
 
             self.run = False
 
+        self._CLEAN_ENVIRONMENT()
+
 
     def _CONNECT(self):
         try:
@@ -89,14 +92,18 @@ class Crawler():
 
     def _RUN_HLSSTREAM(self):
         for file in os.listdir(self.settings.CRAWLDIR):
-            print file
-            video_id = file.split('_')[0]
-            HP = HLS_Pipeline(
-                settings = self.settings,
-                mezz_file = os.path.join(self.settings.CRAWLDIR, file),
-                video_id = video_id
-                )
-            HP.run()
+            if fnmatch.fnmatch(file, '.*'):
+                pass
+            else:
+                print file
+                video_id = file.split('_')[0]
+                HP = HLS_Pipeline(
+                    settings = self.settings,
+                    mezz_file = os.path.join(self.settings.CRAWLDIR, file),
+                    video_id = video_id
+                    )
+                HP.run()
+                print HP.manifest_url
         return True
 
 
@@ -108,6 +115,8 @@ class Crawler():
         pass
 
     def _CLEAN_ENVIRONMENT(self):
+        for file in os.listdir(self.settings.CRAWLDIR):
+            os.remove(os.path.join(self.settings.CRAWLDIR, file))
         pass
 
 
