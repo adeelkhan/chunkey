@@ -5,14 +5,14 @@ def readme():
         return f.read()
 
 setup(
-    name='veda_hls',
+    name='vhls',
     version='0.1',
     description='HLS Transport Stream Pipeline',
-    url='http://github.com/yro/veda_hls',
+    url='http://github.com/yro/vhls',
     author='@yro',
     author_email='greg@willowgrain.io',
     license='',
-    packages=['veda_hls'],
+    packages=['vhls'],
     include_package_data=True,
     install_requires=[
         'boto',

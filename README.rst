@@ -1,7 +1,7 @@
-VEDA\_HLS
+VHLS
 =========
 
-HTTP Live Stream Encode for AWS EC2, VEDA, and edX
+HTTP Live Stream Encode for endpoints in AWS EC2
 --------------------------------------------------
 
 This is a quick HLS library/crawler for conversion from static file
@@ -13,7 +13,7 @@ Install
 
 ::
 
-    `pip install veda_hls`
+    `pip install vhls`
 
 | **NOTE:** This requires a compiled version of ffmpeg (with libx264)
   available here:
@@ -26,30 +26,18 @@ In the aws\_keys.json file, add AWS secret key, access key ID, and
 target bucket. The “Deliver Root” is optional, and can point to a root
 subdirectory in the bucket, if desired.
 
-Use (one-off):
+Use:
 --------------
 
 ::
 
-    from veda_hls import VEDA_HLS
+    from vhls import VHLS
 
-    VEDA_HLS(
+    VHLS(
         mezz_file='link_to/file/to_be/transcoded.mp4'
         manifest='manifest_name' ## optional
         )
 
-Use (crawler)
--------------
-
-::
-
-    from veda_hls import VEDA_HLS
-
-    VEDA_HLS(
-        crawl=True
-        crawl_bucket='aws_s3_bucketname'
-        crawl_root=bucketdir' ## optional
-        )
 
 
 

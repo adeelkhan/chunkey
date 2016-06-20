@@ -13,7 +13,7 @@ from encode_pipeline import HLS_Pipeline
 import util_functions
 
 
-class VEDA_HLS():
+class VHLS():
 
     def __init__(self, **kwargs):
 
