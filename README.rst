@@ -52,13 +52,13 @@ Args:
     mezz_file = link_to/file/to_be/transcoded.mp4' ##MANDATORY
         can be filepath or URL
 
-    manifest = 'manifest_name' ## optional
-
-    encode_profiles = 'path/to/encode_profiles.json'
-
     DELIVER_BUCKET = 's3_bucket_to_deliver_to'
 
     DELIVER_ROOT = 'optional_bucket_directory'
+
+    manifest = 'target_manifest_name' ## optional
+
+    encode_profiles = 'path/to/encode_profiles.json' ## will read defaults
 
 
 Credential Passing
@@ -91,11 +91,10 @@ Retrieve data:
 
 
 
-**TODO**:
+**Future**:
 
-[ ] Logging
+-Logging
 
-[ ] passing AWS creds to tests
 
 [ ] ffmpeg testing for included test file
 
