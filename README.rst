@@ -55,13 +55,7 @@ Use (crawler)
 
 **TODO**:
 
-[ ] CRAWL
+[ ] Logging
+[ ] passing AWS creds to tests
+[ ] ffmpeg testing for included test file
 
-[ ] JSON setup scripting
-
-[ ] Video ID Generation
-
-[ ] API Data pushing
-::
-    [ ] VAL  
-    [ ] VEDA  

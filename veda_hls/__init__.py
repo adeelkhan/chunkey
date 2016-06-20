@@ -35,25 +35,19 @@ class VEDA_HLS():
         for key, value in kwargs.items():
             setattr(self.settings, key, value)
 
-        if self.crawl is False:
-            """
-            Regular run
-            """
-            self._RUN()
-
-        elif self.crawl is True:
-            """
-            Crawl Function
-            """
-            self._CRAWL()
+        self.Pipeline = None
+        self.complete = self._RUN()
+        if self.complete is True:
+            return self.Pipeline.manifest_url
+        else:
+            return None
 
 
     def _RUN(self):
         """
         Regular run
         """
-        # if self.crawl is False:
-        EP = HLS_Pipeline(
+        self.Pipeline = HLS_Pipeline(
             settings=self.settings,
             mezz_file=self.mezz_file
             )
@@ -62,31 +56,10 @@ class VEDA_HLS():
             if '.m3u8' not in self.manifest:
                 self.manifest += '.m3u8'
 
-            EP.manifest = self.manifest
+            self.Pipeline.manifest = self.manifest
 
-        complete = EP.run()
+        complete = self.Pipeline.run()
         return complete
-
-
-    def _CRAWL(self):
-        """
-        Crawl Function
-        """
-        from bucket_crawler import Crawler
-
-        if self.crawl_bucket == None:
-            print "ERROR : No crawl bucket specified"
-            return False
-
-        C1 = Crawler(
-            settings=self.settings,
-            bucket = self.crawl_bucket,
-            directory = self.crawl_root
-            )
-        
-        return False
-
-
 
 
 
