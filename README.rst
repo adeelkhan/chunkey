@@ -37,26 +37,48 @@ Use:
 
     from vhls import VHLS
 
-
-    V1 = VHLS(
-        mezz_file='link_to/file/to_be/transcoded.mp4'
-        )
+    V1 = VHLS(mezz_file = 'link_to/file/to_be/transcoded.mp4')
 
 will generate an HLS manifest with as many streams as indicated by 
 default (5), or the optional 'encode\_profiles.json' file pointed to by 
 a keyword arg (see below)
 
 
-Args (optional):
+Args:
 -----
 
 ::
 
-    manifest='manifest_name' ## optional
+    mezz_file = link_to/file/to_be/transcoded.mp4' ##MANDATORY
+        can be filepath or URL
 
-    access_keys='path/to/access_keys.json'
+    manifest = 'manifest_name' ## optional
 
-    encode_profiles='path/to/encode_profiles.json'
+    encode_profiles = 'path/to/encode_profiles.json'
+
+    DELIVER_BUCKET = 's3_bucket_to_deliver_to'
+
+    DELIVER_ROOT = 'optional_bucket_directory'
+
+
+Credential Passing
+----
+
+either:
+
+::
+
+    access_keys = 'path/to/access_keys.json'
+
+or
+
+::
+
+    ACCESS_KEY_ID = '' 
+    
+    SECRET_ACCESS_KEY = ''
+
+
 
 
 Retrieve data:
