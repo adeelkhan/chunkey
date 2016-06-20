@@ -27,10 +27,10 @@ Generate master manifest, upload (easy, via boto) to output bucket
 
 '''
 ffmpeg command :
-
 "-b:a 64k -ar 44100 -c:v libx264 -vf scale=1920:1080 -crf 18 -r 24 -g 72 
 -f hls -hls_time 9 -hls_list_size 0 -s 1920x1080 
 /Users/tiagorodriguez/Desktop/HLS_testbed/0/XXXXXXXX2015-V000700_0.m3u8",
+
 
 '''
 
@@ -74,6 +74,7 @@ class HLS_Pipeline():
         self._EXECUTE_ENCODE()
         self._MANIFEST_DATA()
         self._MANIFEST_GENERATE()
+
         self.file_delivered = self._UPLOAD_TRANSPORT()
 
         self._CLEAN_WORKDIR()

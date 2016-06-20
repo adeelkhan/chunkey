@@ -2,3 +2,5 @@
 *.pyc
 testing_util.py
 vhls.egg-info/
+
+WORKDIR/

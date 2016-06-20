@@ -30,11 +30,6 @@ class VHLS():
 
         self.Pipeline = None
         self.complete = self._RUN()
-        if self.complete is True:
-            self.manifest_url = self.Pipeline.manifest_url
-        #     return self.Pipeline.manifest_url
-        # else:
-        #     return None
 
 
     def _RUN(self):
@@ -52,49 +47,13 @@ class VHLS():
 
             self.Pipeline.manifest = self.manifest
 
-        complete = self.Pipeline.run()
-        return complete
+        self.complete = self.Pipeline.run()
+        self.manifest_url = self.Pipeline.manifest_url
+        return None
 
 
 
 def main():
-    ## NOTE: May enable this in future ##
-    # """
-    # Can be run as either standalone or as a script
-
-    # """
-    # parser = argparse.ArgumentParser()
-
-    # parser.usage = '''
-    # {cmd} -v [--mezz_file] mezzanine video (file to be encoded)
-
-    # {cmd} -m [--manifest] m3u8 target manifest name
-
-    # {cmd} -log [--log_results] Drop results in logfile 
-    #     instead of sys.stdout
-
-    # '''.format(cmd=sys.argv[0])
-
-    # parser.add_argument(
-    #     '-v', '--mezz_file', help='Mezzanine Video', default=''
-    #     )
-    # parser.add_argument(
-    #     '-m', '--manifest', help='Target Manifest Name', default=None
-    #     )
-    # parser.add_argument(
-    #     '-log', '--log_results', help='Log Results in Datafile', default=False)
-
-    # args = parser.parse_args()
-
-    # if len(args.mezz_file) == 0:
-    #     print 'ERROR : No video file specified'
-    #     return 1
-
-    # V1 = VHLS(
-    #     mezz_file=args.mezz_file,
-    #     manifest=args.manifest,
-    #     log_results=args.log_results
-    #     )
     pass
 
 if __name__ == '__main__':
