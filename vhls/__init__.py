@@ -1,3 +1,4 @@
+
 import os
 import sys
 import argparse
@@ -6,6 +7,7 @@ import argparse
 Primary Function
 
 """
+
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from settings import Settings
 
@@ -16,7 +18,6 @@ import util_functions
 class VHLS():
 
     def __init__(self, **kwargs):
-
         self.mezz_file = kwargs.get('mezz_file', None)
         self.manifest = kwargs.get('manifest', None)
         self.manifest_url = None
@@ -31,7 +32,6 @@ class VHLS():
         self.Pipeline = None
         self.complete = self._RUN()
 
-
     def _RUN(self):
         """
         Regular run
@@ -41,7 +41,7 @@ class VHLS():
             mezz_file=self.mezz_file
             )
 
-        if self.manifest != None:
+        if self.manifest is not None:
             if '.m3u8' not in self.manifest:
                 self.manifest += '.m3u8'
 
@@ -52,10 +52,8 @@ class VHLS():
         return None
 
 
-
 def main():
     pass
 
 if __name__ == '__main__':
     sys.exit(main())
-

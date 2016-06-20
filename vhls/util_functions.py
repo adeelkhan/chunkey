@@ -1,3 +1,4 @@
+
 import os
 import sys
 import subprocess
@@ -36,9 +37,11 @@ def status_bar(process):
 
         if line == '' and process.poll() is not None:
             break
-        if fps == None or duration == None:
+        if fps is None or duration is None:
             if "Stream #" in line and " Video: " in line:
-                fps = [s for s in line.split(',') if "fps" in s][0].strip(' fps')
+                fps = [
+                    s for s in line.split(',') if "fps" in s
+                    ][0].strip(' fps')
 
             if "Duration: " in line:
                 dur = line.split('Duration: ')[1].split(',')[0].strip()
@@ -52,7 +55,9 @@ def status_bar(process):
 
                 sys.stdout.write('\r')
                 i = int(pctg * 20.0)
-                sys.stdout.write("%s : [%-20s] %d%%" % ('Transcode', '='*i, int(pctg * 100)))
+                sys.stdout.write(
+                    "%s : [%-20s] %d%%" % ('Transcode', '='*i, int(pctg * 100))
+                    )
                 sys.stdout.flush()
     """
     Just for politeness
@@ -70,26 +75,30 @@ def probe_video(VideoFileObject):
     ffprobe_comm = 'ffprobe -hide_banner ' + VideoFileObject.filepath
 
     p = subprocess.Popen(
-        ffprobe_comm, 
-        stdout=subprocess.PIPE, 
-        stderr=subprocess.STDOUT, 
+        ffprobe_comm,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         shell=True
         )
 
     for line in iter(p.stdout.readline, b''):
         if "Duration: " in line:
-            ## Duration
+            # Duration
             vid_duration = line.split('Duration: ')[1].split(',')[0].strip()
-            VideoFileObject.duration = seconds_from_string(duration=vid_duration)
-            ## Bitrate
+            VideoFileObject.duration = seconds_from_string(
+                duration=vid_duration
+                )
+            # Bitrate
             try:
-                VideoFileObject.bitrate = float(line.split('bitrate: ')[1].strip().split()[0])
+                VideoFileObject.bitrate = float(
+                    line.split('bitrate: ')[1].strip().split()[0]
+                    )
             except:
                 pass
         elif "Stream #" in line and 'Video: ' in line:
-            codec_array = line.strip().split(',') 
+            codec_array = line.strip().split(',')
             for c in codec_array:
-                ## Resolution
+                # Resolution
                 if len(c.split('x')) == 2:
                     if '[' not in c:
                         VideoFileObject.resolution = c.strip()
@@ -100,4 +109,3 @@ def probe_video(VideoFileObject):
 
 if __name__ == '__main__':
     log_results('Test', True)
-

@@ -1,3 +1,4 @@
+
 import os
 import sys
 import unittest
@@ -8,7 +9,11 @@ import boto
 tests for VEDA_HLS
 
 """
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'veda_hls'))
+sys.path.append(
+    os.path.join(
+        os.path.dirname(os.path.dirname(__file__)),
+        'veda_hls')
+    )
 from encode_pipeline import HLS_Pipeline
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from settings import Settings
@@ -20,11 +25,11 @@ class TestEncodePipeline(unittest.TestCase):
     def test_command_gen(self):
         """
         Generate an ffmpeg command
- 
+
         """
         self.Pipeline = HLS_Pipeline(
-            mezz_file = os.path.join(
-                os.path.dirname(__file__), 
+            mezz_file=os.path.join(
+                os.path.dirname(__file__),
                 'OVTESTFILE_01.mp4'
                 )
             )
@@ -32,7 +37,7 @@ class TestEncodePipeline(unittest.TestCase):
         self.Pipeline._GENERATE_ENCODE()
 
         self.assertEqual(
-            len(self.Pipeline.settings.TRANSCODE_PROFILES), 
+            len(self.Pipeline.settings.TRANSCODE_PROFILES),
             len(self.Pipeline.encode_list)
             )
         return self
@@ -45,10 +50,10 @@ class TestFFMPEGCompile(unittest.TestCase):
 
         """
         process = subprocess.Popen(
-            'ffprobe', 
-            stdout=subprocess.PIPE, 
-            stderr=subprocess.STDOUT, 
-            shell=True, 
+            'ffprobe',
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            shell=True,
             universal_newlines=True
             )
 
@@ -57,7 +62,8 @@ class TestFFMPEGCompile(unittest.TestCase):
             probe_commands.append(line.strip())
 
         self.assertTrue(
-            "usage: ffprobe [OPTIONS] [INPUT_FILE]" in [ l for l in probe_commands ]
+            "usage: ffprobe [OPTIONS] [INPUT_FILE]" in
+            [l for l in probe_commands]
             )
 
 
@@ -88,10 +94,9 @@ class TestAWSCredentials(unittest.TestCase):
             return True
         except:
             return False
-    
+
     def test_upload_connection(self):
         self.assertTrue(self.s3_connection())
-
 
 
 def main():
@@ -101,7 +106,3 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
-
-
-
-
