@@ -40,7 +40,6 @@ Use:
 
     V1 = VHLS(
         mezz_file='link_to/file/to_be/transcoded.mp4'
-        
         )
 
 will generate an HLS manifest with as many streams as indicated by 
