@@ -51,6 +51,7 @@ Args (optional):
 -----
 
 ::
+
     manifest='manifest_name' ## optional
 
     access_keys='path/to/access_keys.json'
@@ -59,9 +60,13 @@ Args (optional):
 
 
 Retrieve data:
-
+-----
 ::
+
+    V1.complete -- boolean for completed encode
+
     V1.manifest_url -- endpoint url for manifest (aws s3)
+
 
 
 **TODO**:
