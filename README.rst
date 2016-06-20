@@ -23,12 +23,12 @@ Install
 Setup
 -----
 
-In the 'aws\_keys.json' file, add AWS secret key, access key ID, and
-target bucket. 
-| The “Deliver Root” is optional, and can point to a root
-subdirectory in the bucket, if desired.
+| In the 'aws\_keys.json' file, add AWS secret key, access key ID, and
+  target bucket.  
+| The “Deliver Root” is optional, and can point to a root subdirectory 
+  in the bucket, if desired.  
 | The 'encode\_profiles.json' file can act as a template for a set of 
-encoding profiles as desired
+  encoding profiles as desired
 
 Use:
 ----
