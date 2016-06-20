@@ -69,7 +69,12 @@ class Settings():
         VAL information
         """
 
+
+
         """
         VEDA information
         """
+
+        self.VEDA_ATTACH = False
+        self.VAL_ATTACH = False 
 

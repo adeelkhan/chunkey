@@ -14,6 +14,7 @@ Crawl s3 bucket/dir
 boto.config.set('Boto','http_socket_timeout','10') 
 
 from encode_pipeline import HLS_Pipeline
+import util_functions()
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from settings import Settings
@@ -48,6 +49,7 @@ class Crawler():
             self.run = self._CONNECT()
             self.run = self._LIST()
             self.run = self._RUN_HLSSTREAM()
+            self.run = self._PASS_DATA()
 
             self.run = False
 
@@ -103,13 +105,23 @@ class Crawler():
                     video_id = video_id
                     )
                 HP.run()
+                print HP.
                 print HP.manifest_url
         return True
 
 
     def _PASS_DATA(self):
-        ## Send Data to VEDA / VAL
-        pass
+        """
+        Generate tokens, pass URL data to veda/VAL
+        """
+
+        veda_token = util_functions.generate_veda_token(settings=self.settings)
+        print veda_token
+        ## Send Data to VEDA
+
+        ## / VAL
+        return False
+        # pass
 
     def _LOG_DATA(self):
         pass

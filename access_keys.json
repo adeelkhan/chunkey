@@ -6,5 +6,15 @@
     "AWS_DEFAULTS": {
         "DELIVER_BUCKET": "",
         "DELIVER_ROOT": ""
+    },
+    "VEDA_KEYS ": {
+        "ACCESS_KEY_ID": "",
+        "SECRET_ACCESS_KEY": ""
+    },
+    "VAL_KEYS": {
+        "VAL_PASS": "",
+        "VAL_USER": "",
+        "VAL_CLIENT_ID": "",
+        "VAL_SECRET_KEY": ""
     }
 }
