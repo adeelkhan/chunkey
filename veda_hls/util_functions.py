@@ -12,14 +12,6 @@ from settings import Settings
 settings = Settings()
 
 
-def log_results(message, result):
-    with open(settings.LOG_FILE, 'a') as l1:
-        l1.write('%s %s %s %s' % ('[', str(datetime.datetime.now()), ']', ' '))
-        l1.write('%s : %r' % (message, result))
-        l1.write('\n')
-    return None
-
-
 def seconds_from_string(duration):
     """
     Return a float (seconds) from something like 00:15:32.33

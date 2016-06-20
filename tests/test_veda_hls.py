@@ -3,8 +3,6 @@ import sys
 import unittest
 import subprocess
 import boto
-# import boto.s3
-# from boto.s3.key import Key
 
 """
 tests for VEDA_HLS
@@ -62,6 +60,7 @@ class TestFFMPEGCompile(unittest.TestCase):
             "usage: ffprobe [OPTIONS] [INPUT_FILE]" in [ l for l in probe_commands ]
             )
 
+
 @unittest.skip("AWS Credentialing")
 class TestAWSCredentials(unittest.TestCase):
     """
@@ -96,9 +95,7 @@ class TestAWSCredentials(unittest.TestCase):
 
 
 def main():
-    util_functions.log_results(
-        'VEDA HLS Test', False
-        )
+
     unittest.main()
 
 

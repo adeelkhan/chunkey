@@ -14,16 +14,8 @@ class Settings():
 
         self.WORKDIR = kwargs.get(
             'work_dir', 
-            os.path.join(os.path.dirname(__file__), 'WORKDIR')
+            os.path.join(os.getcwd(), 'WORKDIR')
             )
-        self.CRAWLDIR = os.path.join(os.path.dirname(__file__), 'CRAWL')
-
-        """
-        Logging
-
-        """
-        self.LOG_RESULTS = kwargs.get('log_results', False)
-        self.LOG_FILE = os.path.join(os.path.dirname(__file__), 'log.out')
 
         """
         Encode Profiles
@@ -64,12 +56,4 @@ class Settings():
             'DELIVER_ROOT', 
             data["AWS_DEFAULTS"]["DELIVER_ROOT"]
             )
-
-        """
-        VAL information
-        """
-
-        """
-        VEDA information
-        """
 

@@ -8,6 +8,7 @@ import boto
 import boto.s3
 from boto.s3.key import Key
 import shutil
+import requests
 
 try:
     boto.config.add_section('Boto') 
@@ -66,21 +67,36 @@ class HLS_Pipeline():
         if not os.path.exists(self.video_root):
             os.mkdir(self.video_root)
 
-        self._GENERATE_ENCODE()
+        if 'http' in self.mezz_file:
+            self._DOWNLOAD_FROM_URL()
 
+        self._GENERATE_ENCODE()
         self._EXECUTE_ENCODE()
         self._MANIFEST_DATA()
         self._MANIFEST_GENERATE()
         self.file_delivered = self._UPLOAD_TRANSPORT()
 
-        if self.settings.LOG_RESULTS is True:
-            util_functions.log_results(
-                message='%s : %s' % ('MEZZ : ', os.path.basename(self.mezz_file)), 
-                complete=True
-                )
-
-
         self._CLEAN_WORKDIR()
+        return True
+
+
+    def _DOWNLOAD_FROM_URL(self):
+        """
+        Function to test and DL from url
+        """
+        d = requests.head(self.mezz_file, timeout=20)
+        print d.status_code
+        if d.status_code > 299:
+            return False
+        
+        r = requests.get(self.mezz_file, stream=True)
+
+        with open(os.path.join(self.settings.WORKDIR, os.path.basename(self.mezz_file)), 'wb') as f:
+            for chunk in r.iter_content(chunk_size=1024): 
+                if chunk: # filter out keep-alive new chunks
+                    f.write(chunk)
+
+        self.mezz_file = self.settings.WORKDIR, os.path.basename(self.mezz_file)
         return True
 
 
@@ -252,27 +268,13 @@ class HLS_Pipeline():
             """ 
             get vid info, gen status
             """
-            if self.settings.LOG_RESULTS is False:
-                util_functions.status_bar(process=process)
-
+            util_functions.status_bar(process=process)
 
             if os.path.exists(output_file):
                 """
                 We'll let this fail quietly
                 """
-                # self.completed_encodes.append(output_file)
-
-                if self.settings.LOG_RESULTS is True:
-                    util_functions.log_results(
-                        message=os.path.basename(output_file), 
-                        complete=True
-                        )
-            else:
-                if self.settings.LOG_RESULTS is True:
-                    util_functions.log_results(
-                        message=os.path.basename(output_file), 
-                        complete=False
-                        )
+                return True
 
         return None
 
@@ -293,7 +295,6 @@ class HLS_Pipeline():
                     max_bandwidth = bandwidth
 
         return max_bandwidth
-
 
 
     def _MANIFEST_DATA(self):
@@ -339,7 +340,6 @@ class HLS_Pipeline():
         return None
 
 
-
     def _MANIFEST_GENERATE(self):
 
         with open(os.path.join(self.video_root, self.manifest), 'w') as m1:
@@ -357,7 +357,6 @@ class HLS_Pipeline():
                 m1.write('\n')
 
         return None
-
 
 
     def _UPLOAD_TRANSPORT(self):
@@ -397,8 +396,7 @@ class HLS_Pipeline():
                     )
 
                 upload_key.set_acl('public-read')
-
-        if self.settings.DELIVER_ROOT != None:
+        if self.settings.DELIVER_ROOT != None and len(self.settings.DELIVER_ROOT) > 0:
             self.manifest_url = '/'.join((
                 self.settings.DELIVER_BUCKET,
                 self.settings.DELIVER_ROOT,
@@ -412,12 +410,6 @@ class HLS_Pipeline():
                 ))
 
         return True
-
-
-
-    def _PASS_DATA(self):
-        pass
-
 
 
     def _CLEAN_WORKDIR(self):
