@@ -13,7 +13,7 @@ Install
 
 ::
 
-    `pip install vhls`
+    `python setup.py install`
 
 | **NOTE:** This requires a compiled version of ffmpeg (with libx264)
   available here:
@@ -27,7 +27,7 @@ target bucket. The “Deliver Root” is optional, and can point to a root
 subdirectory in the bucket, if desired.
 
 Use:
---------------
+----
 
 ::
 
@@ -39,11 +39,22 @@ Use:
         )
 
 
+Args:
+-----
+
+::
+    access_keys='path/to/access_keys.json'
+
+    encode_profiles='path/to/encode_profiles.json'
+
+
 
 
 **TODO**:
 
 [ ] Logging
+
 [ ] passing AWS creds to tests
+
 [ ] ffmpeg testing for included test file
 

@@ -19,14 +19,7 @@ class VHLS():
 
         self.mezz_file = kwargs.get('mezz_file', None)
         self.manifest = kwargs.get('manifest', None)
-        self.log_results = kwargs.get('log_results', None)
-
-        """
-        Crawler commands
-        """
-        self.crawl = kwargs.get('crawl', False)
-        self.crawl_bucket = kwargs.get('crawl_bucket', None)
-        self.crawl_root = kwargs.get('crawl_root', None)
+        self.manifest_url = None
 
         """
         Key kwargs
@@ -38,9 +31,10 @@ class VHLS():
         self.Pipeline = None
         self.complete = self._RUN()
         if self.complete is True:
-            return self.Pipeline.manifest_url
-        else:
-            return None
+            self.manifest_url = self.Pipeline.manifest_url
+        #     return self.Pipeline.manifest_url
+        # else:
+        #     return None
 
 
     def _RUN(self):
@@ -96,7 +90,7 @@ def main():
     #     print 'ERROR : No video file specified'
     #     return 1
 
-    # V1 = VEDA_HLS(
+    # V1 = VHLS(
     #     mezz_file=args.mezz_file,
     #     manifest=args.manifest,
     #     log_results=args.log_results
