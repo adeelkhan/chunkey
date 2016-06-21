@@ -10,10 +10,10 @@ import shutil
 import requests
 
 try:
-    boto.config.add_section('Boto') 
+    boto.config.add_section('Boto')
 except:
     pass
-boto.config.set('Boto','http_socket_timeout','10') 
+boto.config.set('Boto', 'http_socket_timeout', '10')
 
 """
 Encode streams of input -> output for HLS five stream video
@@ -26,13 +26,12 @@ Generate master manifest, upload (easy, via boto) to output bucket
 
 '''
 ffmpeg command :
-"-b:a 64k -ar 44100 -c:v libx264 -vf scale=1920:1080 -crf 18 -r 24 -g 72 
--f hls -hls_time 9 -hls_list_size 0 -s 1920x1080 
+"-b:a 64k -ar 44100 -c:v libx264 -vf scale=1920:1080 -crf 18 -r 24 -g 72
+-f hls -hls_time 9 -hls_list_size 0 -s 1920x1080
 /Users/tiagorodriguez/Desktop/HLS_testbed/0/XXXXXXXX2015-V000700_0.m3u8",
 
 
 '''
-
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from settings import Settings
 import util_functions
@@ -53,7 +52,6 @@ class HLS_Pipeline():
         self.manifest = kwargs.get('manifest', self.video_id + '.m3u8')
         self.manifest_data = []
         self.manifest_url = None
-
 
     def run(self):
         """
@@ -78,7 +76,6 @@ class HLS_Pipeline():
         self._CLEAN_WORKDIR()
         return True
 
-
     def _DOWNLOAD_FROM_URL(self):
         """
         Function to test and DL from url
@@ -87,25 +84,28 @@ class HLS_Pipeline():
         # print d.status_code
         if d.status_code > 299:
             return False
-        
+
         r = requests.get(self.mezz_file, stream=True)
 
-        with open(os.path.join(self.settings.WORKDIR, os.path.basename(self.mezz_file)), 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024): 
-                if chunk: # filter out keep-alive new chunks
+        with open(
+            os.path.join(
+                self.settings.WORKDIR,
+                os.path.basename(self.mezz_file)), 'wb'
+                ) as f:
+            for chunk in r.iter_content(chunk_size=1024):
+                if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
 
         self.mezz_file = os.path.join(
-            self.settings.WORKDIR, 
+            self.settings.WORKDIR,
             os.path.basename(self.mezz_file)
             )
         return True
 
-
     def _SCALAR_COMMANDS(self, profile):
         """
         Padding (if requested and needed)
-        letter/pillarboxing Command example: -vf pad=720:480:0:38 
+        letter/pillarboxing Command example: -vf pad=720:480:0:38
         (target reso, x, y)
 
         """
@@ -129,20 +129,22 @@ class HLS_Pipeline():
         vert_resolution = float(V1.resolution.split('x')[1])
 
         """Aspect Ratio as float"""
-        if vert_resolution != None and horiz_resolution != None:
+        if vert_resolution is not None and horiz_resolution is not None:
             aspect_ratio = float(horiz_resolution) / float(vert_resolution)
         else:
             return scalar_command
 
-        if (aspect_ratio - .00001) <= self.settings.TARGET_ASPECT_RATIO <= (aspect_ratio + .00001):
+        if (aspect_ratio - .00001) <= \
+            self.settings.TARGET_ASPECT_RATIO <= \
+                (aspect_ratio + .00001):
             return scalar_command
 
         elif vert_resolution == 1080.0 and horiz_resolution == 1440.0:
             return scalar_command
 
         """
-        Pad videos with differing aspect ratios, 
-        either in pillar or letter box, 
+        Pad videos with differing aspect ratios,
+        either in pillar or letter box
         """
         target_vertical_resolution = profile['scale'].split(':')[1]
         target_horiz_resolution = profile['scale'].split(':')[0]
@@ -151,14 +153,16 @@ class HLS_Pipeline():
             """
             LETTERBOX
             """
-            scalar = (float(target_vertical_resolution) - \
-                (float(target_horiz_resolution) / aspect_ratio)) / 2
+            scalar = (float(target_vertical_resolution) -
+                      (float(target_horiz_resolution) / aspect_ratio)) / 2
 
             scalar_command = "-vf scale=" + target_horiz_resolution
-            scalar_command += ":" + str(int(target_vertical_resolution) - (int(scalar) * 2))
+            scalar_command += ":" + str(int(target_vertical_resolution) -
+                                        (int(scalar) * 2))
 
             """Padding"""
-            scalar_command += ",pad=" + target_horiz_resolution + ":" + target_vertical_resolution
+            scalar_command += ",pad=" + target_horiz_resolution + \
+                ":" + target_vertical_resolution
             scalar_command += ":0:" + str(int(scalar))
             return scalar_command
 
@@ -166,17 +170,19 @@ class HLS_Pipeline():
             """
             PILLARBOX
             """
-            scalar = (float(target_horiz_resolution) - \
-                (aspect_ratio * float(target_vertical_resolution))) / 2
+            scalar = (float(target_horiz_resolution) -
+                      (aspect_ratio * float(target_vertical_resolution))) / 2
 
-            scalar_command = "-vf scale=" + str(int(target_horiz_resolution) - (int(scalar) * 2)) 
+            scalar_command = "-vf scale=" + str(int(target_horiz_resolution) -
+                                                (int(scalar) * 2))
             scalar_command += ":" + target_vertical_resolution
 
             """Padding"""
-            scalar_command += ",pad=" + target_horiz_resolution + ":" + target_vertical_resolution
+            scalar_command += ",pad=" + target_horiz_resolution + ":" +
+            target_vertical_resolution
+
             scalar_command += ":" + str(int(scalar)) + ":0 "
             return scalar_command
-
 
     def _GENERATE_ENCODE(self):
         """
@@ -184,15 +190,17 @@ class HLS_Pipeline():
 
         """
         '''
-        # ffmpeg -y -i 
-        /Users/tiagorodriguez/Desktop/HLS_testbed/TEST_VIDEO/HARSPU27T313-V043500_DTH.mp4 
-        -c:a aac -strict experimental -ac 2 -b:a 96k -ar 44100 
-        -c:v libx264 -pix_fmt yuv420p -profile:v main -level 3.2 -maxrate 2M -bufsize 6M 
-        -crf 18 -r 24 -g 72 -f hls -hls_time 9 -hls_list_size 0 -s 1280x720 
+        # ffmpeg -y -i
+        /Users/tiagorodriguez/Desktop/HLS_testbed/TEST_VIDEO/HARSPU27T313-V043500_DTH.mp4
+        -c:a aac -strict experimental -ac 2 -b:a 96k -ar 44100
+        -c:v libx264 -pix_fmt yuv420p -profile:v main
+        -level 3.2 -maxrate 2M -bufsize 6M
+        -crf 18 -r 24 -g 72 -f hls -hls_time 9 -hls_list_size 0 -s 1280x720
         /Users/tiagorodriguez/Desktop/HLS_testbed/OUTPUT_TEST/1280x720.m3u8
-        
+
         '''
-        for profile_name, profile in self.settings.TRANSCODE_PROFILES.iteritems():
+        for profile_name, profile in
+        self.settings.TRANSCODE_PROFILES.iteritems():
             ffcommand = ['ffmpeg -y -i']
             ffcommand.append(self.mezz_file)
 
@@ -208,10 +216,12 @@ class HLS_Pipeline():
             """
             Add codec
             """
-            ffcommand.append("-pix_fmt yuv420p -profile:v main -level 3.2 -maxrate 2M -bufsize 6M")
+            ffcommand.append("-pix_fmt yuv420p")
+            ffcommand.append("-profile:v main -level 3.2")
+            ffcommand.append("-maxrate 2M -bufsize 6M")
             ffcommand.append("-c:v")
             ffcommand.append("libx264")
-            
+
             """
             Add scaling / rate factor / framerate
             """
@@ -252,7 +262,6 @@ class HLS_Pipeline():
 
         return None
 
-
     def _EXECUTE_ENCODE(self):
         for command in self.encode_list:
 
@@ -261,24 +270,21 @@ class HLS_Pipeline():
             output_file = files_array[1]
 
             process = subprocess.Popen(
-                command, 
-                stdout=subprocess.PIPE, 
-                stderr=subprocess.STDOUT, 
-                shell=True, 
+                command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                shell=True,
                 universal_newlines=True
                 )
-            """ 
+            """
             get vid info, gen status
             """
             util_functions.status_bar(process=process)
             """
             We'll let this fail quietly
             """
-            # if os.path.exists(output_file):
-                # return True
 
         return None
-
 
     def _DETERMINE_BANDWIDTH(self, profile_name):
 
@@ -288,15 +294,18 @@ class HLS_Pipeline():
         TODO: Determine more accurate transmission overhead
         """
         for file in os.listdir(self.video_root):
-            if fnmatch.fnmatch(file, '*.ts') \
-            and fnmatch.fnmatch(file, '_'.join((self.video_id, profile_name, '*'))):
+            if fnmatch.fnmatch(file, '*.ts') and fnmatch.fnmatch(
+                file,
+                '_'.join((self.video_id, profile_name, '*'))
+                    ):
 
-                bandwidth = float(os.stat(os.path.join(self.video_root, file)).st_size) / 9
+                bandwidth = float(
+                    os.stat(os.path.join(self.video_root, file)).st_size
+                    ) / 9
                 if bandwidth > max_bandwidth:
                     max_bandwidth = bandwidth
 
         return max_bandwidth
-
 
     def _MANIFEST_DATA(self):
 
@@ -306,7 +315,7 @@ class HLS_Pipeline():
             self.ts_manifest = None
 
         '''
-        MANIFEST : 
+        MANIFEST :
         NOTE -- this doesn't seem to work with directories in S3
 
         #EXTM3U
@@ -320,7 +329,8 @@ class HLS_Pipeline():
         OUTPUT_TEST/XXXXXXXX2015-V000700_.m3u8
 
         '''
-        for profile_name, profile in self.settings.TRANSCODE_PROFILES.iteritems():
+        for profile_name, profile in
+        self.settings.TRANSCODE_PROFILES.iteritems():
             T1 = TransportStream()
             """
             TS manifest
@@ -331,15 +341,19 @@ class HLS_Pipeline():
             """
             Bandwidth
             """
-            T1.bandwidth = int(self._DETERMINE_BANDWIDTH(profile_name=profile_name))
+            T1.bandwidth = int(self._DETERMINE_BANDWIDTH(
+                profile_name=profile_name
+                ))
+
             """
             resolution
             """
-            T1.resolution = self.settings.TRANSCODE_PROFILES[profile_name]['scale'].replace(':', 'x')
+            pre_reso = self.settings.TRANSCODE_PROFILES[profile_name]['scale']
+            T1.resolution = pre_reso.replace(':', 'x')
+
             self.manifest_data.append(T1)
 
         return None
-
 
     def _MANIFEST_GENERATE(self):
 
@@ -359,14 +373,14 @@ class HLS_Pipeline():
 
         return None
 
-
     def _UPLOAD_TRANSPORT(self):
         """
         **NOTE**
-        We won't bother with multipart upload operations here, 
-        as this should NEVER be that big. We're uploading ${settings.HLS_TIME} (default=9) 
-        seconds of a squashed file, so if you're above 5gB, you're from the future, 
-        and you should be doing something else or outside playing with your jetpack 
+        We won't bother with multipart upload operations here,
+        as this should NEVER be that big. We're uploading
+        ${settings.HLS_TIME} (default=9) seconds of a squashed file,
+        so if you're above 5gB, you're from the future, and you
+        should be doing something else or outside playing with your jetpack
         above the sunken city of Miami.
 
         Upload single part
@@ -385,7 +399,7 @@ class HLS_Pipeline():
             if not fnmatch.fnmatch(transport_stream, ".*"):
                 upload_key = Key(delv_bucket)
                 upload_key.key = '/'.join((
-                    self.settings.DELIVER_ROOT, 
+                    self.settings.DELIVER_ROOT,
                     self.video_id,
                     transport_stream
                     ))
@@ -397,7 +411,8 @@ class HLS_Pipeline():
                     )
 
                 upload_key.set_acl('public-read')
-        if self.settings.DELIVER_ROOT != None and len(self.settings.DELIVER_ROOT) > 0:
+        if self.settings.DELIVER_ROOT is not None and \
+                len(self.settings.DELIVER_ROOT) > 0:
             self.manifest_url = '/'.join((
                 self.settings.DELIVER_BUCKET,
                 self.settings.DELIVER_ROOT,
@@ -412,7 +427,6 @@ class HLS_Pipeline():
 
         return True
 
-
     def _CLEAN_WORKDIR(self):
         """
         Clean out environment
@@ -421,10 +435,8 @@ class HLS_Pipeline():
         shutil.rmtree(self.video_root)
 
 
-
 def main():
     pass
 
 if __name__ == '__main__':
     sys.exit(main())
-
