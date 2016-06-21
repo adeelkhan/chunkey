@@ -66,11 +66,11 @@ class VHLS():
             'tests'
             )
         os.chdir(test_dir)
-        result = nose.run()
+        test_bool = nose.run()
 
         '''Return to previous state'''
         os.chdir(current_dir)
-        return None
+        return test_bool
 
 
 def main():
