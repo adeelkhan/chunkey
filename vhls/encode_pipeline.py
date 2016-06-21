@@ -9,12 +9,6 @@ from boto.s3.key import Key
 import shutil
 import requests
 
-try:
-    boto.config.add_section('Boto')
-except:
-    pass
-boto.config.set('Boto', 'http_socket_timeout', '10')
-
 """
 Encode streams of input -> output for HLS five stream video
 
@@ -23,21 +17,20 @@ NOTE: Just a test, so will need greater looking into
 Generate master manifest, upload (easy, via boto) to output bucket
 
 """
-
-'''
-ffmpeg command :
-"-b:a 64k -ar 44100 -c:v libx264 -vf scale=1920:1080 -crf 18 -r 24 -g 72
--f hls -hls_time 9 -hls_list_size 0 -s 1920x1080
-/Users/tiagorodriguez/Desktop/HLS_testbed/0/XXXXXXXX2015-V000700_0.m3u8",
+try:
+    boto.config.add_section('Boto')
+except:
+    pass
 
 
-'''
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from settings import Settings
 import util_functions
 
 
+
 class HLS_Pipeline():
+
 
     def __init__(self, mezz_file, **kwargs):
         self.settings = kwargs.get('settings', Settings())
@@ -52,6 +45,7 @@ class HLS_Pipeline():
         self.manifest = kwargs.get('manifest', self.video_id + '.m3u8')
         self.manifest_data = []
         self.manifest_url = None
+
 
     def run(self):
         """
@@ -75,6 +69,7 @@ class HLS_Pipeline():
 
         self._CLEAN_WORKDIR()
         return True
+
 
     def _DOWNLOAD_FROM_URL(self):
         """
@@ -101,6 +96,7 @@ class HLS_Pipeline():
             os.path.basename(self.mezz_file)
             )
         return True
+
 
     def _SCALAR_COMMANDS(self, profile):
         """
@@ -178,11 +174,13 @@ class HLS_Pipeline():
             scalar_command += ":" + target_vertical_resolution
 
             """Padding"""
-            scalar_command += ",pad=" + target_horiz_resolution + ":" +
-            target_vertical_resolution
+            scalar_command += ",pad="
+            scalar_command += target_horiz_resolution + ":"
+            scalar_command += target_vertical_resolution
 
             scalar_command += ":" + str(int(scalar)) + ":0 "
             return scalar_command
+
 
     def _GENERATE_ENCODE(self):
         """
@@ -199,8 +197,8 @@ class HLS_Pipeline():
         /Users/tiagorodriguez/Desktop/HLS_testbed/OUTPUT_TEST/1280x720.m3u8
 
         '''
-        for profile_name, profile in
-        self.settings.TRANSCODE_PROFILES.iteritems():
+        encode_profiles = self.settings.TRANSCODE_PROFILES
+        for profile_name, profile in encode_profiles.iteritems():
             ffcommand = ['ffmpeg -y -i']
             ffcommand.append(self.mezz_file)
 
@@ -262,6 +260,7 @@ class HLS_Pipeline():
 
         return None
 
+
     def _EXECUTE_ENCODE(self):
         for command in self.encode_list:
 
@@ -286,6 +285,7 @@ class HLS_Pipeline():
 
         return None
 
+
     def _DETERMINE_BANDWIDTH(self, profile_name):
 
         max_bandwidth = 0.0
@@ -306,6 +306,7 @@ class HLS_Pipeline():
                     max_bandwidth = bandwidth
 
         return max_bandwidth
+
 
     def _MANIFEST_DATA(self):
 
@@ -329,8 +330,8 @@ class HLS_Pipeline():
         OUTPUT_TEST/XXXXXXXX2015-V000700_.m3u8
 
         '''
-        for profile_name, profile in
-        self.settings.TRANSCODE_PROFILES.iteritems():
+        encode_profiles = self.settings.TRANSCODE_PROFILES
+        for profile_name, profile in encode_profiles.iteritems():
             T1 = TransportStream()
             """
             TS manifest
@@ -355,6 +356,7 @@ class HLS_Pipeline():
 
         return None
 
+
     def _MANIFEST_GENERATE(self):
 
         with open(os.path.join(self.video_root, self.manifest), 'w') as m1:
@@ -372,6 +374,7 @@ class HLS_Pipeline():
                 m1.write('\n')
 
         return None
+
 
     def _UPLOAD_TRANSPORT(self):
         """
@@ -427,12 +430,14 @@ class HLS_Pipeline():
 
         return True
 
+
     def _CLEAN_WORKDIR(self):
         """
         Clean out environment
 
         """
         shutil.rmtree(self.video_root)
+
 
 
 def main():
