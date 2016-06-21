@@ -73,7 +73,6 @@ class HLS_Pipeline():
         self._EXECUTE_ENCODE()
         self._MANIFEST_DATA()
         self._MANIFEST_GENERATE()
-
         self.file_delivered = self._UPLOAD_TRANSPORT()
 
         self._CLEAN_WORKDIR()
@@ -85,7 +84,7 @@ class HLS_Pipeline():
         Function to test and DL from url
         """
         d = requests.head(self.mezz_file, timeout=20)
-        print d.status_code
+        # print d.status_code
         if d.status_code > 299:
             return False
         
@@ -96,7 +95,10 @@ class HLS_Pipeline():
                 if chunk: # filter out keep-alive new chunks
                     f.write(chunk)
 
-        self.mezz_file = self.settings.WORKDIR, os.path.basename(self.mezz_file)
+        self.mezz_file = os.path.join(
+            self.settings.WORKDIR, 
+            os.path.basename(self.mezz_file)
+            )
         return True
 
 
@@ -269,12 +271,11 @@ class HLS_Pipeline():
             get vid info, gen status
             """
             util_functions.status_bar(process=process)
-
-            if os.path.exists(output_file):
-                """
-                We'll let this fail quietly
-                """
-                return True
+            """
+            We'll let this fail quietly
+            """
+            # if os.path.exists(output_file):
+                # return True
 
         return None
 
