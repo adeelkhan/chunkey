@@ -12,7 +12,7 @@ tests for VEDA_HLS
 sys.path.append(
     os.path.join(
         os.path.dirname(os.path.dirname(__file__)),
-        'veda_hls')
+        'vhls')
     )
 from encode_pipeline import HLS_Pipeline
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))

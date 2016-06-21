@@ -1,7 +1,7 @@
 
 import os
 import sys
-import argparse
+import nose
 
 """
 Primary Function
@@ -30,7 +30,10 @@ class VHLS():
             setattr(self.settings, key, value)
 
         self.Pipeline = None
-        self.complete = self._RUN()
+        if self.mezz_file is not None:
+            self.complete = self._RUN()
+        else:
+            self.complete = self._TEST()
 
     def _RUN(self):
         """
@@ -49,6 +52,24 @@ class VHLS():
 
         self.complete = self.Pipeline.run()
         self.manifest_url = self.Pipeline.manifest_url
+        return None
+
+
+    def _TEST(self):
+        """
+        Run tests
+        """
+        current_dir = os.getcwd()
+
+        test_dir = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), 
+            'tests'
+            )
+        os.chdir(test_dir)
+        result = nose.run()
+
+        '''Return to previous state'''
+        os.chdir(current_dir)
         return None
 
 
