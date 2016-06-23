@@ -8,7 +8,7 @@ Primary Function
 
 """
 
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from settings import Settings
 
 from encode_pipeline import HLS_Pipeline
@@ -62,7 +62,7 @@ class VHLS():
         current_dir = os.getcwd()
 
         test_dir = os.path.join(
-            os.path.dirname(os.path.dirname(__file__)), 
+            os.path.dirname(os.path.dirname((os.path.abspath(__file__))), 
             'tests'
             )
         os.chdir(test_dir)
@@ -74,7 +74,8 @@ class VHLS():
 
 
 def main():
-    pass
+    V = VHLS()
+    # pass
 
 if __name__ == '__main__':
     sys.exit(main())
