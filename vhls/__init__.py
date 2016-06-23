@@ -9,7 +9,7 @@ Primary Function
 """
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from settings import Settings
+from vhls_settings import Settings
 
 from encode_pipeline import HLS_Pipeline
 import util_functions

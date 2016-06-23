@@ -9,7 +9,7 @@ import datetime
 
 """
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from settings import Settings
+from vhls_settings import Settings
 settings = Settings()
 
 
