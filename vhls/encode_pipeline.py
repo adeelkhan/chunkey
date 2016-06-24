@@ -440,6 +440,8 @@ class HLS_Pipeline():
 
         """
         shutil.rmtree(self.video_root)
+        os.remove(self.mezz_file)
+        # for file in os.listdir('')
 
 
 
