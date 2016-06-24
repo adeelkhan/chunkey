@@ -30,7 +30,6 @@ import util_functions
 
 class HLS_Pipeline():
 
-
     def __init__(self, mezz_file, **kwargs):
         self.settings = kwargs.get('settings', Settings())
 
@@ -408,22 +407,27 @@ class HLS_Pipeline():
                 """
                 Actually upload the thing
                 """
+                sys.stdout.write('\r')
+                sys.stdout.write("%s : %s" % ('Upload', transport_stream))
                 upload_key.set_contents_from_filename(
                     os.path.join(self.video_root, transport_stream)
                     )
-
                 upload_key.set_acl('public-read')
+                sys.stdout.flush()                
+
         if self.settings.DELIVER_ROOT is not None and \
                 len(self.settings.DELIVER_ROOT) > 0:
             self.manifest_url = '/'.join((
                 self.settings.DELIVER_BUCKET,
                 self.settings.DELIVER_ROOT,
+                self.video_id,
                 self.manifest
                 ))
 
         else:
             self.manifest_url = '/'.join((
                 self.settings.DELIVER_BUCKET,
+                self.video_id,
                 self.manifest
                 ))
 
