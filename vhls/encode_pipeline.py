@@ -21,8 +21,11 @@ try:
     boto.config.add_section('Boto')
 except:
     pass
+boto.config.set('Boto','http_socket_timeout','600') 
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    )
 from vhls_settings import Settings
 import util_functions
 
