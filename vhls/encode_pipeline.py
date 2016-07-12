@@ -35,7 +35,7 @@ class HLS_Pipeline():
 
     def __init__(self, mezz_file, **kwargs):
         self.settings = kwargs.get('settings', Settings())
-
+        self.clean = kwargs.get('clean', True) 
         self.mezz_file = mezz_file
         self.encode_list = []
         self.video_id = kwargs.get(
@@ -60,7 +60,8 @@ class HLS_Pipeline():
             os.mkdir(self.video_root)
 
         if 'http' in self.mezz_file:
-            self._DOWNLOAD_FROM_URL()
+            if self._DOWNLOAD_FROM_URL() is False:
+                return False
 
         self._GENERATE_ENCODE()
         self._EXECUTE_ENCODE()
@@ -77,7 +78,7 @@ class HLS_Pipeline():
         Function to test and DL from url
         """
         d = requests.head(self.mezz_file, timeout=20)
-        # print d.status_code
+
         if d.status_code > 299:
             return False
 
@@ -421,6 +422,7 @@ class HLS_Pipeline():
         if self.settings.DELIVER_ROOT is not None and \
                 len(self.settings.DELIVER_ROOT) > 0:
             self.manifest_url = '/'.join((
+                'https://s3.amazonaws.com',
                 self.settings.DELIVER_BUCKET,
                 self.settings.DELIVER_ROOT,
                 self.video_id,
@@ -429,6 +431,7 @@ class HLS_Pipeline():
 
         else:
             self.manifest_url = '/'.join((
+                'https://s3.amazonaws.com',
                 self.settings.DELIVER_BUCKET,
                 self.video_id,
                 self.manifest
@@ -443,7 +446,8 @@ class HLS_Pipeline():
 
         """
         shutil.rmtree(self.video_root)
-        os.remove(self.mezz_file)
+        if self.clean is True:
+            os.remove(self.mezz_file)
         # for file in os.listdir('')
 
 

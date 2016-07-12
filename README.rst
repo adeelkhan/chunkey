@@ -23,7 +23,7 @@ Install
 Setup
 -----
 
-| In the 'aws\_keys.json' file, add AWS secret key, access key ID, and
+| In the 'access\_keys.json' file, add AWS secret key, access key ID, and
   target bucket.  
 | The “Deliver Root” is optional, and can point to a root subdirectory 
   in the bucket, if desired.  

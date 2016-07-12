@@ -21,6 +21,7 @@ class VHLS():
         self.mezz_file = kwargs.get('mezz_file', None)
         self.manifest = kwargs.get('manifest', None)
         self.manifest_url = None
+        self.clean = kwargs.get('clean', True) 
 
         """
         Key kwargs
@@ -41,7 +42,8 @@ class VHLS():
         """
         self.Pipeline = HLS_Pipeline(
             settings=self.settings,
-            mezz_file=self.mezz_file
+            mezz_file=self.mezz_file,
+            clean = self.clean
             )
 
         if self.manifest is not None:
@@ -52,7 +54,7 @@ class VHLS():
 
         self.complete = self.Pipeline.run()
         self.manifest_url = self.Pipeline.manifest_url
-        return None
+        return True
 
 
     def _TEST(self):
