@@ -102,4 +102,3 @@ def probe_video(VideoFileObject):
                     else:
                         VideoFileObject.resolution = c.strip().split(' ')[0]
     return VideoFileObject
-

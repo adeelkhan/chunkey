@@ -22,13 +22,12 @@ Encode gen/delivery for HLS transport streams
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    greg@willowgrain.io
-
+Auth/Maint: greg@willowgrain.io
 
 """
+
 from encode_pipeline import HLS_Pipeline
 import util_functions
-
 
 
 class VHLS():
@@ -37,7 +36,7 @@ class VHLS():
         self.mezz_file = kwargs.get('mezz_file', None)
         self.manifest = kwargs.get('manifest', None)
         self.manifest_url = None
-        self.clean = kwargs.get('clean', True) 
+        self.clean = kwargs.get('clean', True)
 
         """
         Key kwargs
@@ -46,13 +45,11 @@ class VHLS():
         for key, value in kwargs.items():
             setattr(self.settings, key, value)
 
-
         self.Pipeline = None
         if self.mezz_file is not None:
             self.complete = self._RUN()
         else:
             self.complete = self._TEST()
-
 
     def _RUN(self):
         """
@@ -61,7 +58,7 @@ class VHLS():
         self.Pipeline = HLS_Pipeline(
             settings=self.settings,
             mezz_file=self.mezz_file,
-            clean = self.clean
+            clean=self.clean
             )
 
         if self.manifest is not None:
@@ -74,7 +71,6 @@ class VHLS():
         self.manifest_url = self.Pipeline.manifest_url
         return True
 
-
     def _TEST(self):
         """
         Run tests
@@ -82,7 +78,7 @@ class VHLS():
         current_dir = os.getcwd()
 
         test_dir = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             'tests'
             )
         os.chdir(test_dir)
@@ -93,8 +89,11 @@ class VHLS():
         return test_bool
 
 
-
 class VHLS_Globals():
+
+    """
+    global variables
+    """
 
     def __init__(self, **kwargs):
         self.workdir = kwargs.get(
@@ -104,7 +103,7 @@ class VHLS_Globals():
         self.encode_profiles = kwargs.get(
             'encode_profiles',
             os.path.join(
-                os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                 'encode_profiles.json'
                 )
             )
@@ -121,7 +120,6 @@ class VHLS_Globals():
         self.SECRET_ACCESS_KEY = kwargs.get('SECRET_ACCESS_KEY', None)
         self.DELIVER_BUCKET = kwargs.get('DELIVER_BUCKET', None)
         self.DELIVER_ROOT = kwargs.get('DELIVER_ROOT', None)
-
 
 
 def main():
