@@ -1,16 +1,8 @@
 # TO DO:
 
-- [ ] Redo credential passing (just pass all creds as kwargs)
-
-- [ ] Option to turn off delivery
+- [ ] ffmpeg build [ separate repo ]
 
 - [ ] Redo testing, add build tests
-
-- [ ] ffmpeg build
-
-- [ ] Travis 
-
-- [ ] License
 
 - [ ] pep8
 
@@ -18,4 +10,14 @@
 
 - [ ] blog post
 
-- [ ] clean kwarg
+----
+
+- [x] Redo credential passing (just pass all creds as kwargs)
+
+- [x] Option to turn off delivery
+
+- [x] clean kwarg
+
+- [x] Travis 
+
+- [x] License

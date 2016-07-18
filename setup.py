@@ -8,17 +8,18 @@ def readme():
 
 setup(
     name='vhls',
-    version='0.1',
+    version='1.1',
     description='HLS Transport Stream Pipeline',
     url='http://github.com/yro/vhls',
     author='@yro',
     author_email='greg@willowgrain.io',
-    license='',
+    license='GNU',
     packages=['vhls'],
     include_package_data=True,
     install_requires=[
         'boto',
         'requests',
+        'pyyaml'
         ],
     test_suite='nose.collector',
     tests_require=['nose'],
