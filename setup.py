@@ -19,6 +19,7 @@ setup(
     install_requires=[
         'boto',
         'requests',
+        'pyyaml'
         ],
     test_suite='nose.collector',
     tests_require=['nose'],

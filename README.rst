@@ -8,6 +8,12 @@ This is a quick HLS library/crawler for conversion from static file
 hosting to an HLS solution for quick and high-quality/low-latency
 streaming that is adaptible for differing global connection speeds.
 
+
+|Build|
+
+| [v1.0] 2016.07 
+| (c)(GNU-GPL) @yro 2016 
+
 Install
 -------
 
@@ -23,8 +29,6 @@ Install
 Setup
 -----
 
-| In the 'access\_keys.json' file, add AWS secret key, access key ID, and
-  target bucket.  
 | The “Deliver Root” is optional, and can point to a root subdirectory 
   in the bucket, if desired.  
 | The 'encode\_profiles.json' file can act as a template for a set of 
@@ -47,16 +51,18 @@ a keyword arg (see below)
 Args:
 -----
 
+*Mandatory:*
+
 ::
 
     mezz_file = link_to/file/to_be/transcoded.mp4' ##MANDATORY
         can be filepath or URL
 
-    DELIVER_BUCKET = 's3_bucket_to_deliver_to'
+*Optional* (will deliver file to endpoint)
 
-    DELIVER_ROOT = 'optional_bucket_directory'
+::
 
-    manifest = 'target_manifest_name' ## optional
+    manifest = 'target_manifest_name'
 
     encode_profiles = 'path/to/encode_profiles.json' ## will read defaults
 
@@ -64,15 +70,11 @@ Args:
 Credential Passing
 ----
 
-either:
-
 ::
 
-    access_keys = 'path/to/access_keys.json'
+    DELIVER_BUCKET = 's3_bucket_to_deliver_to'
 
-or
-
-::
+    DELIVER_ROOT = 'optional_bucket_directory'
 
     ACCESS_KEY_ID = '' 
     
@@ -87,14 +89,6 @@ Retrieve data:
 
     V1.complete -- boolean for completed encode
 
-    V1.manifest_url -- endpoint url for manifest (aws s3)
+    V1.manifest_url -- endpoint url for manifest (aws s3) or local dir path
 
-
-
-**Future**:
-
--Logging
-
-
-[ ] ffmpeg testing for included test file
-
+.. |Build| image:: https://travis-ci.org/yro/openveda.svg?branch=master

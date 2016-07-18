@@ -8,9 +8,6 @@ import datetime
 "Dumb" utility executables
 
 """
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from vhls_settings import Settings
-settings = Settings()
 
 
 def seconds_from_string(duration):
@@ -106,6 +103,3 @@ def probe_video(VideoFileObject):
                         VideoFileObject.resolution = c.strip().split(' ')[0]
     return VideoFileObject
 
-
-if __name__ == '__main__':
-    log_results('Test', True)

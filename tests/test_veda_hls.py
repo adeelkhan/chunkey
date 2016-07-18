@@ -43,6 +43,7 @@ class TestEncodePipeline(unittest.TestCase):
         return self
 
 
+@unittest.skip("FFmpeg compiled")
 class TestFFMPEGCompile(unittest.TestCase):
     def test_ffmpeg_compile(self):
         """

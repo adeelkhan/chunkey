@@ -22,11 +22,6 @@ try:
 except:
     pass
 boto.config.set('Boto','http_socket_timeout','600') 
-
-sys.path.append(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    )
-from vhls_settings import Settings
 import util_functions
 
 
@@ -34,14 +29,14 @@ import util_functions
 class HLS_Pipeline():
 
     def __init__(self, mezz_file, **kwargs):
-        self.settings = kwargs.get('settings', Settings())
+        self.settings = kwargs.get('settings', None)
         self.clean = kwargs.get('clean', True) 
         self.mezz_file = mezz_file
         self.encode_list = []
         self.video_id = kwargs.get(
             'video_id', os.path.basename(self.mezz_file).split('.')[0]
             )
-        self.video_root = os.path.join(self.settings.WORKDIR, self.video_id)
+        self.video_root = os.path.join(self.settings.workdir, self.video_id)
 
         self.manifest = kwargs.get('manifest', self.video_id + '.m3u8')
         self.manifest_data = []
@@ -53,8 +48,8 @@ class HLS_Pipeline():
         Groom environ, make dirs, clean environ
 
         """
-        if not os.path.exists(self.settings.WORKDIR):
-            os.mkdir(self.settings.WORKDIR)
+        if not os.path.exists(self.settings.workdir):
+            os.mkdir(self.settings.workdir)
 
         if not os.path.exists(self.video_root):
             os.mkdir(self.video_root)
@@ -67,10 +62,19 @@ class HLS_Pipeline():
         self._EXECUTE_ENCODE()
         self._MANIFEST_DATA()
         self._MANIFEST_GENERATE()
-        self.file_delivered = self._UPLOAD_TRANSPORT()
-
-        self._CLEAN_WORKDIR()
-        return True
+        if self.settings.ACCESS_KEY_ID is not None:
+            self.file_delivered = self._UPLOAD_TRANSPORT()
+            self._CLEAN_workdir()
+            return True
+        else:
+            if os.path.exists(
+                os.path.join(self.video_root, self.video_id)
+                ):
+                self.manifest_url = os.path.join(
+                    self.video_root, 
+                    self.video_id
+                    )
+                return True
 
 
     def _DOWNLOAD_FROM_URL(self):
@@ -86,7 +90,7 @@ class HLS_Pipeline():
 
         with open(
             os.path.join(
-                self.settings.WORKDIR,
+                self.settings.workdir,
                 os.path.basename(self.mezz_file)), 'wb'
                 ) as f:
             for chunk in r.iter_content(chunk_size=1024):
@@ -94,7 +98,7 @@ class HLS_Pipeline():
                     f.write(chunk)
 
         self.mezz_file = os.path.join(
-            self.settings.WORKDIR,
+            self.settings.workdir,
             os.path.basename(self.mezz_file)
             )
         return True
@@ -440,7 +444,7 @@ class HLS_Pipeline():
         return True
 
 
-    def _CLEAN_WORKDIR(self):
+    def _CLEAN_workdir(self):
         """
         Clean out environment
 
@@ -448,7 +452,6 @@ class HLS_Pipeline():
         shutil.rmtree(self.video_root)
         if self.clean is True:
             os.remove(self.mezz_file)
-        # for file in os.listdir('')
 
 
 
