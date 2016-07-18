@@ -2,10 +2,6 @@
 
 - [ ] ffmpeg build [ separate repo ]
 
-- [ ] Redo testing, add build tests
-
-- [ ] pep8
-
 - [ ] pip
 
 - [ ] blog post
@@ -21,3 +17,7 @@
 - [x] Travis 
 
 - [x] License
+
+- [x] Redo testing, add build tests
+
+- [x] pep8
