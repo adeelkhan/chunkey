@@ -83,7 +83,7 @@ class TestAWSCredentials(unittest.TestCase):
                 )
             self.assertTrue(
                 len(self.settings.SECRET_ACCESS_KEY) > 0
-                )   
+                )
         else:
             self.assertTrue(self.settings.SECRET_ACCESS_KEY is None)
 

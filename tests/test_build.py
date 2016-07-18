@@ -24,23 +24,20 @@ class TestVHLSBuild(unittest.TestCase):
 
     def setUp(self):
         self.encode_profiles = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             'encode_profiles.json'
             )
 
         with open(self.encode_profiles) as encode_data_file:
             self.encode_data = json.load(encode_data_file)
 
-
     def test_encodes(self):
         self.assertTrue(isinstance(self.encode_data, dict))
         self.assertTrue(isinstance(self.encode_data['HLS_TIME'], int))
 
-
     def test_utils(self):
         seconds = util_functions.seconds_from_string(duration='00:01:00')
         self.assertTrue(seconds == 60.0)
-
 
 
 def main():
