@@ -9,11 +9,8 @@ import boto
 tests for VEDA_HLS
 
 """
-sys.path.append(
-    os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-        'vhls')
-    )
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from encode_pipeline import HLS_Pipeline
 import util_functions
 
