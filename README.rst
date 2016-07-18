@@ -91,4 +91,4 @@ Retrieve data:
 
     V1.manifest_url -- endpoint url for manifest (aws s3) or local dir path
 
-.. |Build| image:: https://travis-ci.org/yro/openveda.svg?branch=master
+.. |Build| image:: https://travis-ci.org/yro/vhls.svg?branch=master
