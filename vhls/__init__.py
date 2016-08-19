@@ -5,22 +5,43 @@ import nose
 import json
 
 """
-Encode gen/delivery for HLS transport streams
+Encode gen/delivery for HLS transport streams -
+    
+    - pass AWS args as keywords
 
-    Copyright (C) 2016 @yro | Gregory Martin
+will convert an extant S3 object to an HLS stream 
+(streams determined by encode_profiles.json)
+and generate a manifest -- all of which will be uploaded next 
+to the salient mezzanine file, and delivered to the "delivery bucket"
+(with an included tag for "delivery root" if you're into directories)
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+example use:
+    VH2 = VHLS(
+        mezz_file = '${path/to/mezz_file}', (can be URL)
+        DELIVER_BUCKET='${AWS S3 bucket to deliver to}', [optional]
+        ACCESS_KEY_ID='${AWS Access key ID}', [optional]
+        SECRET_ACCESS_KEY='${AWS Secret Access Key}' [optional]
+        )
+    print VH2.manifest_url
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
+Copyright (C) 2016 @yro | Gregory Martin
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Auth/Maint: greg@willowgrain.io
 
@@ -39,7 +60,7 @@ class VHLS():
         self.clean = kwargs.get('clean', True)
 
         """
-        Key kwargs
+        Key kwargs // pass to settings as is
         """
         self.settings = VHLS_Globals()
         for key, value in kwargs.items():

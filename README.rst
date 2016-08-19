@@ -60,6 +60,8 @@ Args:
 
 *Optional* (will deliver file to endpoint)
 
+*[MUST PASS CREDENTIALS]
+
 ::
 
     manifest = 'target_manifest_name'
@@ -67,7 +69,7 @@ Args:
     encode_profiles = 'path/to/encode_profiles.json' ## will read defaults
 
 
-Credential Passing
+Credential Passing (optional, for delivery)
 ----
 
 ::
