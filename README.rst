@@ -60,7 +60,7 @@ Args:
 
 *Optional* (will deliver file to endpoint)
 
-*[MUST PASS CREDENTIALS]
+*[MUST PASS CREDENTIALS]*
 
 ::
 
