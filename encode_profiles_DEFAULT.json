@@ -23,6 +23,12 @@
             "audio_depth": "64k",
             "rate_factor": "26",
             "fps": "29.97"
+            },
+        "4": {
+            "scale": "640:360",
+            "audio_depth": "64k",
+            "rate_factor": "32",
+            "fps": "29.97"
             }
         },
     "HLS_TIME": 9
