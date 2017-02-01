@@ -11,7 +11,7 @@ streaming that is adaptible for differing global connection speeds.
 
 |Build|
 
-| [v1.0] 2016.07 
+| [v1.1.0] 2016.07
 | (c)(GNU-GPL) @yro 2016 
 
 Install

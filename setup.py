@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name='vhls',
-    version='1.1',
+    version='1.1.0',
     description='HLS Transport Stream Pipeline',
     url='http://github.com/yro/vhls',
     author='@yro',
@@ -23,5 +23,6 @@ setup(
         ],
     test_suite='nose.collector',
     tests_require=['nose'],
+    data_files=[('', ['encode_profiles.json'])],
     zip_safe=False
     )

@@ -4,3 +4,9 @@ testing_util.py
 vhls.egg-info/
 
 WORKDIR/
+
+.idea/
+
+build/
+
+dist/
