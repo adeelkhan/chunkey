@@ -6,15 +6,14 @@ import json
 
 """
 Encode gen/delivery for HLS transport streams -
-    
+
     - pass AWS args as keywords
 
-will convert an extant S3 object to an HLS stream 
-(streams determined by encode_profiles.json)
-and generate a manifest -- all of which will be uploaded next 
-to the salient mezzanine file, and delivered to the "delivery bucket"
-(with an included tag for "delivery root" if you're into directories)
-
+will convert an extant S3 object to an HLS stream (streams determined
+by encode_profiles.json) and generate a manifest -- all of which
+will be uploaded next to the salient mezzanine file, and delivered to
+the "delivery bucket" (with an included tag for "delivery root"
+if you're into directories)
 
 example use:
     VH2 = VHLS(
@@ -24,9 +23,6 @@ example use:
         SECRET_ACCESS_KEY='${AWS Secret Access Key}' [optional]
         )
     print VH2.manifest_url
-
-
-
 
 Copyright (C) 2016 @yro | Gregory Martin
 
