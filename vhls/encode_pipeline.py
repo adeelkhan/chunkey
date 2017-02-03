@@ -18,12 +18,13 @@ Generate master manifest, upload (easy, via boto) to output bucket
 
 """
 
+import util_functions
+
 try:
     boto.config.add_section('Boto')
 except:
     pass
 boto.config.set('Boto', 'http_socket_timeout', '600')
-import util_functions
 
 
 class HLS_Pipeline():

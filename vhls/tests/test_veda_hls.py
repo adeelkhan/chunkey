@@ -9,10 +9,8 @@ import boto
 tests for VEDA_HLS
 
 """
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from encode_pipeline import HLS_Pipeline
-import util_functions
+from vhls.encode_pipeline import HLS_Pipeline
+from vhls import util_functions
 
 
 @unittest.skip("FFmpeg test")
