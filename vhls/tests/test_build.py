@@ -11,9 +11,7 @@ Note: until we include ffmpeg in the build, there's only so much we can do
 
 """
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-# from encode_pipeline import HLS_Pipeline
-import util_functions
+from vhls import util_functions
 
 
 class TestVHLSBuild(unittest.TestCase):
