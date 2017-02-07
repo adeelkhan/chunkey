@@ -140,7 +140,7 @@ class VHLS_Globals():
 
 
 def main():
-    V = VHLS()
+    pass
 
 
 if __name__ == '__main__':

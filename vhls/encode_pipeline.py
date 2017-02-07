@@ -390,11 +390,10 @@ class HLS_Pipeline():
             )
         delv_bucket = conn.get_bucket(self.settings.DELIVER_BUCKET)
 
-        """
-        TODO: Enable video ID override
 
-        """
-        print
+        # TODO: HLS dir sizing
+        # TODO: HLS Fault Tolerance
+
         for transport_stream in os.listdir(self.video_root):
             if not fnmatch.fnmatch(transport_stream, ".*"):
                 upload_key = Key(delv_bucket)
