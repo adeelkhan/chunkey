@@ -27,12 +27,31 @@ except:
 boto.config.set('Boto', 'http_socket_timeout', '600')
 
 
+class VideoFile():
+    """
+    A simple object for a video file
+    """
+    def __init__(self, **kwargs):
+        self.filepath = kwargs.get('filepath', None)
+        self.duration = None
+        self.bitrate = None
+        self.resolution = None
+
+
+class TransportStream(object):
+    """
+    A mini class for the TS
+    """
+    def __init__(self):
+        self.bandwidth = None
+        self.resolution = None
+        self.ts_manifest = None
+
+
 class HLS_Pipeline():
-
     """
-    encode pipeline function
+    Encode Pipeline
     """
-
     def __init__(self, mezz_file, **kwargs):
         self.settings = kwargs.get('settings', None)
         self.clean = kwargs.get('clean', True)
@@ -111,14 +130,6 @@ class HLS_Pipeline():
         """
         scalar_command = "-vf scale=" + profile['scale']
 
-        class VideoFile():
-            """
-            A simple object for a video file
-            """
-            self.filepath = None
-            self.duration = None
-            self.bitrate = None
-            self.resolution = None
 
         V1 = VideoFile()
         V1.filepath = self.mezz_file
@@ -263,10 +274,6 @@ class HLS_Pipeline():
     def _EXECUTE_ENCODE(self):
         for command in self.encode_list:
 
-            files_array = [f for f in command.split(' ') if '/' in f]
-            source_file = files_array[0]
-            output_file = files_array[1]
-
             process = subprocess.Popen(
                 command,
                 stdout=subprocess.PIPE,
@@ -280,6 +287,7 @@ class HLS_Pipeline():
             util_functions.status_bar(process=process)
             """
             We'll let this fail quietly
+            Fault tolerance in manifest gen will pick up.
             """
         return None
 
@@ -305,14 +313,6 @@ class HLS_Pipeline():
         return max_bandwidth
 
     def _MANIFEST_DATA(self):
-        """
-        with a mini class for the TS
-        """
-        class TransportStream():
-            self.bandwidth = None
-            self.resolution = None
-            self.ts_manifest = None
-
         '''
         MANIFEST :
         NOTE -- this doesn't seem to work with directories in S3
@@ -343,7 +343,6 @@ class HLS_Pipeline():
             T1.bandwidth = int(self._DETERMINE_BANDWIDTH(
                 profile_name=profile_name
                 ))
-
             """
             resolution
             """
@@ -355,10 +354,27 @@ class HLS_Pipeline():
         return None
 
     def _MANIFEST_GENERATE(self):
+        """
+        Fault Tolerate corrupt Transport Stream components
+
+        """
+        for file in os.listdir(self.video_root):
+            if fnmatch.fnmatch(file, '*.ts'):
+                TransportVideoObject = VideoFile(
+                    filepath = os.path.join(self.video_root, file)
+                )
+                analyzedTransportVideoObject = util_functions.probe_video(VideoFileObject=TransportVideoObject)
+                if analyzedTransportVideoObject.duration is None:
+                    """
+                    The Transport stream will fail down or up if a ts file is missing, but we cannot remove the
+                    ts from the manifest, as the time will "jump" -- HLS will fail-over to the next lower encode
+                    for that ~11 sec or empty file
+                    """
+                    os.remove(os.path.join(self.video_root, file))
+
 
         with open(os.path.join(self.video_root, self.manifest), 'w') as m1:
             m1.write('#EXTM3U')
-
             m1.write('\n')
             for m in self.manifest_data:
                 m1.write('#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=')
@@ -390,11 +406,7 @@ class HLS_Pipeline():
             )
         delv_bucket = conn.get_bucket(self.settings.DELIVER_BUCKET)
 
-        """
-        TODO: Enable video ID override
 
-        """
-        print
         for transport_stream in os.listdir(self.video_root):
             if not fnmatch.fnmatch(transport_stream, ".*"):
                 upload_key = Key(delv_bucket)

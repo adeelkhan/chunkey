@@ -83,7 +83,6 @@ class VHLS():
                 self.manifest += '.m3u8'
 
             self.Pipeline.manifest = self.manifest
-
         self.complete = self.Pipeline.run()
         self.manifest_url = self.Pipeline.manifest_url
         return True
@@ -140,7 +139,7 @@ class VHLS_Globals():
 
 
 def main():
-    V = VHLS()
+    pass
 
 
 if __name__ == '__main__':
