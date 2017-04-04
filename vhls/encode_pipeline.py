@@ -76,7 +76,7 @@ class HLS_Pipeline():
         if not os.path.exists(self.video_root):
             os.mkdir(self.video_root)
 
-        if 'http' in self.mezz_file:
+        if 'http' in self.mezz_file or 'https' in self.mezz_file:
             if self._DOWNLOAD_FROM_URL() is False:
                 return False
 
@@ -101,7 +101,7 @@ class HLS_Pipeline():
         Function to test and DL from url
         """
         d = requests.head(self.mezz_file, timeout=20)
-
+        print d.status_code
         if d.status_code > 299:
             return False
 
