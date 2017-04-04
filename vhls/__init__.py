@@ -65,6 +65,7 @@ class VHLS():
         self.Pipeline = None
         if self.mezz_file is not None:
             self.complete = self._RUN()
+
         else:
             self.complete = self._TEST()
 
@@ -85,7 +86,7 @@ class VHLS():
             self.Pipeline.manifest = self.manifest
         self.complete = self.Pipeline.run()
         self.manifest_url = self.Pipeline.manifest_url
-        return True
+        return self.complete
 
     def _TEST(self):
         """
@@ -106,7 +107,6 @@ class VHLS():
 
 
 class VHLS_Globals():
-
     """
     global variables
     """
