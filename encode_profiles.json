@@ -41,7 +41,7 @@
             "audio_depth": "32k",
             "rate_factor": "35",
             "fps": "29.97"
-        },
+        }
     },
     "HLS_TIME": 9
 }
