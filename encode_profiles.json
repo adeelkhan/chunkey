@@ -42,12 +42,6 @@
             "rate_factor": "35",
             "fps": "29.97"
         },
-        "7": {
-            "scale": "128:72",
-            "audio_depth": "32k",
-            "rate_factor": "40",
-            "fps": "15"
-        }
     },
     "HLS_TIME": 9
 }
