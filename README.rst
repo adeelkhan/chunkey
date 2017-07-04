@@ -1,7 +1,7 @@
-VHLS
+Chunkey
 =========
 
-HTTP Live Stream Encode for endpoints in AWS EC2
+HTTP Live Stream Encoder for endpoints in AWS EC2
 --------------------------------------------------
 
 This is a quick HLS library/crawler for conversion from static file
@@ -11,7 +11,7 @@ streaming that is adaptible for differing global connection speeds.
 
 |Build|
 
-| [v1.1.0] 2016.07
+| [v1.2.0] 2017.07
 | (c)(GNU-GPL) @yro 2016 
 
 Install
@@ -39,9 +39,9 @@ Use:
 
 ::
 
-    from vhls import VHLS
+    from chunkey import Chunkey
 
-    V1 = VHLS(mezz_file = 'link_to/file/to_be/transcoded.mp4')
+    VidChunk = Chunkey(mezz_file = 'link_to/file/to_be/transcoded.mp4')
 
 will generate an HLS manifest with as many streams as indicated by 
 default (5), or the optional 'encode\_profiles.json' file pointed to by 
@@ -89,8 +89,8 @@ Retrieve data:
 -----
 ::
 
-    V1.complete -- boolean for completed encode
+    VidChunk.complete -- boolean for completed encode
 
-    V1.manifest_url -- endpoint url for manifest (aws s3) or local dir path
+    VidChunk.manifest_url -- endpoint url for manifest (aws s3) or local dir path
 
 .. |Build| image:: https://travis-ci.org/yro/vhls.svg?branch=master
