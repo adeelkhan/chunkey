@@ -4,6 +4,7 @@ python:
 sudo: required
 install: pip install -r requirements.txt
 install: pip install pep8
+install: pip install boto
 
 script:
  - nosetests
