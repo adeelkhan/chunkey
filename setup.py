@@ -20,9 +20,9 @@ setup(
         'boto',
         'requests',
         'pyyaml'
-        ],
+    ],
     test_suite='nose.collector',
     tests_require=['nose'],
     data_files=[('', ['encode_profiles.json'])],
     zip_safe=False
-    )
+)
