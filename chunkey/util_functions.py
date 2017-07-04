@@ -1,19 +1,17 @@
+"""
+"Dumb" utility executables
+
+"""
 
 import os
 import sys
 import subprocess
 import datetime
 
-"""
-"Dumb" utility executables
-
-"""
-
 
 def seconds_from_string(duration):
     """
     Return a float (seconds) from something like 00:15:32.33
-
     """
     hours = float(duration.split(':')[0])
     minutes = float(duration.split(':')[1])
@@ -25,7 +23,6 @@ def seconds_from_string(duration):
 def status_bar(process):
     """
     This is a little gross, but it'll get us a status bar
-
     """
     fps = None
     duration = None
@@ -36,9 +33,7 @@ def status_bar(process):
             break
         if fps is None or duration is None:
             if "Stream #" in line and " Video: " in line:
-                fps = [
-                    s for s in line.split(',') if "fps" in s
-                    ][0].strip(' fps')
+                fps = [s for s in line.split(',') if "fps" in s][0].strip(' fps')
 
             if "Duration: " in line:
                 dur = line.split('Duration: ')[1].split(',')[0].strip()
@@ -52,22 +47,20 @@ def status_bar(process):
 
                 sys.stdout.write('\r')
                 i = int(pctg * 20.0)
-                sys.stdout.write(
-                    "%s : [%-20s] %d%%" % ('Transcode', '='*i, int(pctg * 100))
-                    )
+                sys.stdout.write("%s : [%-20s] %d%%" % ('Transcode', '=' * i, int(pctg * 100)))
                 sys.stdout.flush()
     """
     Just for politeness
     """
     sys.stdout.write('\r')
-    sys.stdout.write("%s : [%-20s] %d%%" % ('Transcode', '='*20, 100))
+    sys.stdout.write("%s : [%-20s] %d%%" % ('Transcode', '=' * 20, 100))
     sys.stdout.flush()
     print ''
 
 
 def probe_video(VideoFileObject):
     """
-    Use ffprobe to determine facts about the video
+    Use ffprobe to determine video metadata
     """
     ffprobe_comm = 'ffprobe -hide_banner ' + VideoFileObject.filepath
 
@@ -76,7 +69,7 @@ def probe_video(VideoFileObject):
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         shell=True
-        )
+    )
 
     for line in iter(p.stdout.readline, b''):
         if "Duration: " in line:
@@ -84,14 +77,13 @@ def probe_video(VideoFileObject):
             vid_duration = line.split('Duration: ')[1].split(',')[0].strip()
             VideoFileObject.duration = seconds_from_string(
                 duration=vid_duration
-                )
+            )
             # Bitrate
             try:
-                VideoFileObject.bitrate = float(
-                    line.split('bitrate: ')[1].strip().split()[0]
-                    )
-            except:
+                VideoFileObject.bitrate = float(line.split('bitrate: ')[1].strip().split()[0])
+            except ValueError:
                 pass
+
         elif "Stream #" in line and 'Video: ' in line:
             codec_array = line.strip().split(',')
             for c in codec_array:

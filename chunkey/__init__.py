@@ -1,9 +1,3 @@
-
-import os
-import sys
-import nose
-import json
-
 """
 Encode gen/delivery for HLS transport streams -
 
@@ -13,16 +7,16 @@ will convert an extant S3 object to an HLS stream (streams determined
 by encode_profiles.json) and generate a manifest -- all of which
 will be uploaded next to the salient mezzanine file, and delivered to
 the "delivery bucket" (with an included tag for "delivery root"
-if you're into directories)
+if you're into directories on S3)
 
 example use:
-    VH2 = VHLS(
+    VideoChunkerInstance = Chunkey(
         mezz_file = '${path/to/mezz_file}', (can be URL)
         DELIVER_BUCKET='${AWS S3 bucket to deliver to}', [optional]
         ACCESS_KEY_ID='${AWS Access key ID}', [optional]
         SECRET_ACCESS_KEY='${AWS Secret Access Key}' [optional]
         )
-    print VH2.manifest_url
+    print VideoChunkerInstance.manifest_url
 
 Copyright (C) 2016 @yro | Gregory Martin
 
@@ -43,41 +37,40 @@ Auth/Maint: greg@willowgrain.io
 
 """
 
-from encode_pipeline import HLS_Pipeline
+import os
+import sys
+import nose
+import json
+
+from encode_pipeline import VideoPipeline
 import util_functions
 
 
-class VHLS():
+class Chunkey(object):
 
     def __init__(self, **kwargs):
         self.mezz_file = kwargs.get('mezz_file', None)
         self.manifest = kwargs.get('manifest', None)
         self.manifest_url = None
         self.clean = kwargs.get('clean', True)
-
-        """
-        Key kwargs // pass to settings as is
-        """
-        self.settings = VHLS_Globals()
+        self.settings = Globals()
         for key, value in kwargs.items():
             setattr(self.settings, key, value)
-
         self.Pipeline = None
         if self.mezz_file is not None:
-            self.complete = self._RUN()
-
+            self.complete = self._run()
         else:
-            self.complete = self._TEST()
+            self.complete = self._test()
 
-    def _RUN(self):
+    def _run(self):
         """
         Regular run
         """
-        self.Pipeline = HLS_Pipeline(
+        self.Pipeline = VideoPipeline(
             settings=self.settings,
             mezz_file=self.mezz_file,
             clean=self.clean
-            )
+        )
 
         if self.manifest is not None:
             if '.m3u8' not in self.manifest:
@@ -88,7 +81,7 @@ class VHLS():
         self.manifest_url = self.Pipeline.manifest_url
         return self.complete
 
-    def _TEST(self):
+    def _test(self):
         """
         Run tests
         """
@@ -97,7 +90,7 @@ class VHLS():
         test_dir = os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             'tests'
-            )
+        )
         os.chdir(test_dir)
         test_bool = nose.run()
 
@@ -106,23 +99,22 @@ class VHLS():
         return test_bool
 
 
-class VHLS_Globals():
+class Globals(object):
     """
     global variables
     """
-
     def __init__(self, **kwargs):
         self.workdir = kwargs.get(
             'work_dir',
             os.path.join(os.getcwd(), 'workdir')
-            )
+        )
         self.encode_profiles = kwargs.get(
             'encode_profiles',
             os.path.join(
                 os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                 'encode_profiles.json'
-                )
             )
+        )
         with open(self.encode_profiles) as encode_data_file:
             encode_data = json.load(encode_data_file)
         self.TRANSCODE_PROFILES = encode_data['ENCODE_PROFILES']

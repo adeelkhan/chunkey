@@ -7,14 +7,14 @@ def readme():
         return f.read()
 
 setup(
-    name='vhls',
-    version='1.1.0',
-    description='HLS Transport Stream Pipeline',
-    url='http://github.com/yro/vhls',
+    name='Chunkey',
+    version='1.2.0',
+    description='HLS Transport Stream/Encode Pipeline',
+    url='http://github.com/yro/chunkey',
     author='@yro',
     author_email='greg@willowgrain.io',
     license='GNU',
-    packages=['vhls'],
+    packages=['chunkey'],
     include_package_data=True,
     install_requires=[
         'boto',

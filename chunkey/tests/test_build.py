@@ -1,28 +1,28 @@
-
-import os
-import sys
-import unittest
-import json
-
 """
 main build test
 
 Note: until we include ffmpeg in the build, there's only so much we can do
 
 """
+import os
+import sys
+import unittest
+import json
 
-from vhls import util_functions
+import chunkey.util_functions
+from chunkey import VidChunk
+import chunkey.encode_pipeline
 
 
-class TestVHLSBuild(unittest.TestCase):
+class TestVidChunkBuild(unittest.TestCase):
 
     def setUp(self):
         self.encode_profiles = os.path.join(
             os.path.dirname(
                 os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                ),
+            ),
             'encode_profiles.json'
-            )
+        )
 
         with open(self.encode_profiles) as encode_data_file:
             self.encode_data = json.load(encode_data_file)

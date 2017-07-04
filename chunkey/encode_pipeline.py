@@ -1,3 +1,11 @@
+"""
+Encode streams of input -> output for HLS five stream video
+
+NOTE: Just a test, so will need greater looking into
+
+Generate master manifest, upload (easy, via boto) to output bucket
+
+"""
 
 import os
 import sys
@@ -9,15 +17,6 @@ from boto.s3.key import Key
 import shutil
 import requests
 
-"""
-Encode streams of input -> output for HLS five stream video
-
-NOTE: Just a test, so will need greater looking into
-
-Generate master manifest, upload (easy, via boto) to output bucket
-
-"""
-
 import util_functions
 
 try:
@@ -27,7 +26,7 @@ except:
 boto.config.set('Boto', 'http_socket_timeout', '600')
 
 
-class VideoFile():
+class VideoFile(object):
     """
     A simple object for a video file
     """
@@ -48,7 +47,7 @@ class TransportStream(object):
         self.ts_manifest = None
 
 
-class HLS_Pipeline():
+class VideoPipeline(object):
     """
     Encode Pipeline
     """
@@ -57,11 +56,8 @@ class HLS_Pipeline():
         self.clean = kwargs.get('clean', True)
         self.mezz_file = mezz_file
         self.encode_list = []
-        self.video_id = kwargs.get(
-            'video_id', os.path.basename(self.mezz_file).split('.')[0]
-            )
+        self.video_id = kwargs.get('video_id', os.path.basename(self.mezz_file).split('.')[0])
         self.video_root = os.path.join(self.settings.workdir, self.video_id)
-
         self.manifest = kwargs.get('manifest', self.video_id + '.m3u8')
         self.manifest_data = []
         self.manifest_url = None
@@ -77,26 +73,26 @@ class HLS_Pipeline():
             os.mkdir(self.video_root)
 
         if 'http' in self.mezz_file or 'https' in self.mezz_file:
-            if self._DOWNLOAD_FROM_URL() is False:
+            if self._download_from_url() is False:
                 return False
 
-        self._GENERATE_ENCODE()
-        self._EXECUTE_ENCODE()
-        self._MANIFEST_DATA()
-        self._MANIFEST_GENERATE()
+        self._generate_encode()
+        self._execute_encode()
+        self._manifest_data()
+        self._manifest_generate()
         if self.settings.ACCESS_KEY_ID is not None:
-            self.file_delivered = self._UPLOAD_TRANSPORT()
-            self._CLEAN_workdir()
+            self.file_delivered = self._upload_transport()
+            self._clean_workspace()
             return True
         else:
             if os.path.exists(os.path.join(self.video_root, self.video_id)):
                 self.manifest_url = os.path.join(
                     self.video_root,
                     self.video_id
-                    )
+                )
                 return True
 
-    def _DOWNLOAD_FROM_URL(self):
+    def _download_from_url(self):
         """
         Function to test and DL from url
         """
@@ -107,11 +103,10 @@ class HLS_Pipeline():
 
         r = requests.get(self.mezz_file, stream=True)
 
-        with open(
-            os.path.join(
-                self.settings.workdir,
-                os.path.basename(self.mezz_file)), 'wb'
-                ) as f:
+        with open(os.path.join(
+            self.settings.workdir,
+            os.path.basename(self.mezz_file)
+        ), 'wb') as f:
             for chunk in r.iter_content(chunk_size=1024):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
@@ -119,24 +114,22 @@ class HLS_Pipeline():
         self.mezz_file = os.path.join(
             self.settings.workdir,
             os.path.basename(self.mezz_file)
-            )
+        )
         return True
 
-    def _SCALAR_COMMANDS(self, profile):
+    def _scalar_commands(self, profile):
         """
         Padding (if requested and needed)
         letter/pillarboxing Command example: -vf pad=720:480:0:38
         (target reso, x, y)
         """
         scalar_command = "-vf scale=" + profile['scale']
+        video_file = VideoFile()
+        video_file.filepath = self.mezz_file
+        util_functions.probe_video(VideoFileObject=video_file)
 
-
-        V1 = VideoFile()
-        V1.filepath = self.mezz_file
-        util_functions.probe_video(VideoFileObject=V1)
-
-        horiz_resolution = float(V1.resolution.split('x')[0])
-        vert_resolution = float(V1.resolution.split('x')[1])
+        horiz_resolution = float(video_file.resolution.split('x')[0])
+        vert_resolution = float(video_file.resolution.split('x')[1])
 
         """Aspect Ratio as float"""
         if vert_resolution is not None and horiz_resolution is not None:
@@ -195,7 +188,7 @@ class HLS_Pipeline():
             scalar_command += ":" + str(int(scalar)) + ":0 "
             return scalar_command
 
-    def _GENERATE_ENCODE(self):
+    def _generate_encode(self):
         """
         Generate ffmpeg commands into array by use in transcode function
         """
@@ -213,7 +206,6 @@ class HLS_Pipeline():
         for profile_name, profile in encode_profiles.iteritems():
             ffcommand = ['ffmpeg -y -i']
             ffcommand.append(self.mezz_file)
-
             """
             Add Audio
             """
@@ -222,7 +214,6 @@ class HLS_Pipeline():
             ffcommand.append(profile['audio_depth'])
             ffcommand.append("-ar")
             ffcommand.append("44100")
-
             """
             Add codec
             """
@@ -231,15 +222,17 @@ class HLS_Pipeline():
             ffcommand.append("-maxrate 2M -bufsize 6M")
             ffcommand.append("-c:v")
             ffcommand.append("libx264")
-
             """
             Add scaling / rate factor / framerate
             """
-            """SCALING COMMANDS"""
-            scalar = self._SCALAR_COMMANDS(profile=profile)
+            """
+            SCALING COMMANDS
+            """
+            scalar = self._scalar_commands(profile=profile)
             ffcommand.append(scalar)
-
-            """RATE FACTOR"""
+            """
+            RATE FACTOR
+            """
             ffcommand.append("-crf")
             ffcommand.append(profile['rate_factor'])
             ffcommand.append("-r")
@@ -257,7 +250,6 @@ class HLS_Pipeline():
             ffcommand.append("0")
             ffcommand.append("-s")
             ffcommand.append(profile['scale'].replace(':', 'x'))
-
             """
             Add output files
             """
@@ -271,7 +263,7 @@ class HLS_Pipeline():
                 self.encode_list.append(' '.join((ffcommand)))
         return None
 
-    def _EXECUTE_ENCODE(self):
+    def _execute_encode(self):
         for command in self.encode_list:
 
             process = subprocess.Popen(
@@ -280,7 +272,7 @@ class HLS_Pipeline():
                 stderr=subprocess.STDOUT,
                 shell=True,
                 universal_newlines=True
-                )
+            )
             """
             get vid info, gen status
             """
@@ -291,28 +283,21 @@ class HLS_Pipeline():
             """
         return None
 
-    def _DETERMINE_BANDWIDTH(self, profile_name):
+    def _determine_bandwidth(self, profile_name):
         """
         TODO: Determine more accurate transmission overhead
         """
-
         max_bandwidth = 0.0
 
         for file in os.listdir(self.video_root):
-            if fnmatch.fnmatch(file, '*.ts') and fnmatch.fnmatch(
-                file,
-                '_'.join((self.video_id, profile_name, '*'))
-                    ):
-
-                bandwidth = float(
-                    os.stat(os.path.join(self.video_root, file)).st_size
-                    ) / 9
+            if fnmatch.fnmatch(file, '*.ts') and fnmatch.fnmatch(file, '_'.join((self.video_id, profile_name, '*'))):
+                bandwidth = float(os.stat(os.path.join(self.video_root, file)).st_size) / 9
                 if bandwidth > max_bandwidth:
                     max_bandwidth = bandwidth
 
         return max_bandwidth
 
-    def _MANIFEST_DATA(self):
+    def _manifest_data(self):
         '''
         MANIFEST :
         NOTE -- this doesn't seem to work with directories in S3
@@ -340,9 +325,9 @@ class HLS_Pipeline():
             """
             Bandwidth
             """
-            T1.bandwidth = int(self._DETERMINE_BANDWIDTH(
+            T1.bandwidth = int(self._determine_bandwidth(
                 profile_name=profile_name
-                ))
+            ))
             """
             resolution
             """
@@ -353,7 +338,7 @@ class HLS_Pipeline():
 
         return None
 
-    def _MANIFEST_GENERATE(self):
+    def _manifest_generate(self):
         """
         Fault Tolerate corrupt Transport Stream components
 
@@ -361,7 +346,7 @@ class HLS_Pipeline():
         for file in os.listdir(self.video_root):
             if fnmatch.fnmatch(file, '*.ts'):
                 TransportVideoObject = VideoFile(
-                    filepath = os.path.join(self.video_root, file)
+                    filepath=os.path.join(self.video_root, file)
                 )
                 analyzedTransportVideoObject = util_functions.probe_video(VideoFileObject=TransportVideoObject)
                 if analyzedTransportVideoObject.duration is None:
@@ -371,7 +356,6 @@ class HLS_Pipeline():
                     for that ~11 sec or empty file
                     """
                     os.remove(os.path.join(self.video_root, file))
-
 
         with open(os.path.join(self.video_root, self.manifest), 'w') as m1:
             m1.write('#EXTM3U')
@@ -388,7 +372,7 @@ class HLS_Pipeline():
 
         return None
 
-    def _UPLOAD_TRANSPORT(self):
+    def _upload_transport(self):
         """
         **NOTE**
         We won't bother with multipart upload operations here,
@@ -403,9 +387,8 @@ class HLS_Pipeline():
         conn = boto.connect_s3(
             self.settings.ACCESS_KEY_ID,
             self.settings.SECRET_ACCESS_KEY
-            )
+        )
         delv_bucket = conn.get_bucket(self.settings.DELIVER_BUCKET)
-
 
         for transport_stream in os.listdir(self.video_root):
             if not fnmatch.fnmatch(transport_stream, ".*"):
@@ -415,12 +398,12 @@ class HLS_Pipeline():
                         self.settings.DELIVER_ROOT,
                         self.video_id,
                         transport_stream
-                        ))
+                    ))
                 else:
                     upload_key.key = '/'.join((
                         self.video_id,
                         transport_stream
-                        ))
+                    ))
                 """
                 Actually upload the thing
                 """
@@ -428,7 +411,7 @@ class HLS_Pipeline():
                 sys.stdout.write("%s : %s" % ('Upload', transport_stream))
                 upload_key.set_contents_from_filename(
                     os.path.join(self.video_root, transport_stream)
-                    )
+                )
                 upload_key.set_acl('public-read')
                 sys.stdout.flush()
 
@@ -440,7 +423,7 @@ class HLS_Pipeline():
                 self.settings.DELIVER_ROOT,
                 self.video_id,
                 self.manifest
-                ))
+            ))
 
         else:
             self.manifest_url = '/'.join((
@@ -448,14 +431,13 @@ class HLS_Pipeline():
                 self.settings.DELIVER_BUCKET,
                 self.video_id,
                 self.manifest
-                ))
+            ))
 
         return True
 
-    def _CLEAN_workdir(self):
+    def _clean_workspace(self):
         """
         Clean out environment
-
         """
         shutil.rmtree(self.video_root)
         if self.clean is True:

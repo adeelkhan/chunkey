@@ -1,10 +1,6 @@
 # TO DO:
 
-- [ ] ffmpeg build [ separate repo ]
-
-- [ ] pip
-
-- [ ] blog post
+- [ ] Unittests
 
 ----
 
@@ -21,3 +17,9 @@
 - [x] Redo testing, add build tests
 
 - [x] pep8
+
+- [x] ffmpeg build [ separate repo ]
+
+- [-] pip
+
+- [-] blog post
