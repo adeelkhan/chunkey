@@ -86,10 +86,7 @@ class TestAWSCredentials(unittest.TestCase):
         """
         if self.settings.ACCESS_KEY_ID is not None:
             try:
-                conn = boto.connect_s3(
-                    self.settings.ACCESS_KEY_ID,
-                    self.settings.SECRET_ACCESS_KEY
-                )
+                conn = boto.connect_s3()
                 conn.get_bucket(self.settings.DELIVER_BUCKET)
                 return True
             except:

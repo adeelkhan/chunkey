@@ -384,10 +384,7 @@ class VideoPipeline(object):
 
         Upload single part
         """
-        conn = boto.connect_s3(
-            self.settings.ACCESS_KEY_ID,
-            self.settings.SECRET_ACCESS_KEY
-        )
+        conn = boto.connect_s3()
         delv_bucket = conn.get_bucket(self.settings.DELIVER_BUCKET)
 
         for transport_stream in os.listdir(self.video_root):
