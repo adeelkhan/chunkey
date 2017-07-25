@@ -1,7 +1,4 @@
 """
-Encode gen/delivery for HLS transport streams -
-
-    - pass AWS args as keywords
 
 will convert an extant S3 object to an HLS stream (streams determined
 by encode_profiles.json) and generate a manifest -- all of which
@@ -13,8 +10,6 @@ example use:
     VideoChunkerInstance = Chunkey(
         mezz_file = '${path/to/mezz_file}', (can be URL)
         DELIVER_BUCKET='${AWS S3 bucket to deliver to}', [optional]
-        ACCESS_KEY_ID='${AWS Access key ID}', [optional]
-        SECRET_ACCESS_KEY='${AWS Secret Access Key}' [optional]
         )
     print VideoChunkerInstance.manifest_url
 
@@ -120,12 +115,6 @@ class Globals(object):
         self.TRANSCODE_PROFILES = encode_data['ENCODE_PROFILES']
         self.HLS_TIME = encode_data['HLS_TIME']
         self.TARGET_ASPECT_RATIO = float(16) / float(9)
-
-        """
-        AWS s3 information
-        """
-        self.ACCESS_KEY_ID = kwargs.get('ACCESS_KEY_ID', None)
-        self.SECRET_ACCESS_KEY = kwargs.get('SECRET_ACCESS_KEY', None)
         self.DELIVER_BUCKET = kwargs.get('DELIVER_BUCKET', None)
         self.DELIVER_ROOT = kwargs.get('DELIVER_ROOT', None)
 
