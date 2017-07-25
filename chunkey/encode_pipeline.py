@@ -61,6 +61,7 @@ class VideoPipeline(object):
         self.manifest = kwargs.get('manifest', self.video_id + '.m3u8')
         self.manifest_data = []
         self.manifest_url = None
+        self.file_delivered = False
 
     def run(self):
         """
@@ -80,17 +81,9 @@ class VideoPipeline(object):
         self._execute_encode()
         self._manifest_data()
         self._manifest_generate()
-        if self.settings.ACCESS_KEY_ID is not None:
-            self.file_delivered = self._upload_transport()
-            self._clean_workspace()
-            return True
-        else:
-            if os.path.exists(os.path.join(self.video_root, self.video_id)):
-                self.manifest_url = os.path.join(
-                    self.video_root,
-                    self.video_id
-                )
-                return True
+        self.file_delivered = self._upload_transport()
+        self._clean_workspace()
+        return True
 
     def _download_from_url(self):
         """

@@ -60,44 +60,6 @@ class TestFFMPEGCompile(unittest.TestCase):
         )
 
 
-@unittest.skip("AWS Credentials")
-class TestAWSCredentials(unittest.TestCase):
-    """
-    Check settings, connect to AWS
-
-    """
-    def setUp():
-        pass
-
-    def test_upload_credentials(self):
-        if self.settings.ACCESS_KEY_ID is not None:
-            self.assertTrue(
-                len(self.settings.ACCESS_KEY_ID) > 0
-            )
-            self.assertTrue(
-                len(self.settings.SECRET_ACCESS_KEY) > 0
-            )
-        else:
-            self.assertTrue(self.settings.SECRET_ACCESS_KEY is None)
-
-    def s3_connection(self):
-        """
-        TODO: Mock this
-        """
-        if self.settings.ACCESS_KEY_ID is not None:
-            try:
-                conn = boto.connect_s3()
-                conn.get_bucket(self.settings.DELIVER_BUCKET)
-                return True
-            except:
-                return False
-        else:
-            return True
-
-    def test_upload_connection(self):
-        self.assertTrue(self.s3_connection())
-
-
 def main():
     unittest.main()
 
