@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name='Chunkey',
-    version='1.2.0',
+    version='1.2.1',
     description='HLS Transport Stream/Encode Pipeline',
     url='http://github.com/yro/chunkey',
     author='@yro',
