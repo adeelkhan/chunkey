@@ -8,3 +8,5 @@ WORKDIR/
 build/
 
 dist/
+
+Chunkey.egg-info/
