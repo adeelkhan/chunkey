@@ -202,11 +202,8 @@ class VideoPipeline(object):
             """
             Add Audio
             """
-            ffcommand.append("-c:a aac -strict experimental -ac 2")
             ffcommand.append("-b:a")
             ffcommand.append(profile['audio_depth'])
-            ffcommand.append("-ar")
-            ffcommand.append("44100")
             """
             Add codec
             """
