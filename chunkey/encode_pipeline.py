@@ -56,7 +56,7 @@ class VideoPipeline(object):
         self.clean = kwargs.get('clean', True)
         self.mezz_file = mezz_file
         self.encode_list = []
-        self.video_id = kwargs.get('video_id', os.path.basename(self.mezz_file).split('.')[0])
+        self.video_id = kwargs.get('video_id', os.path.splitext(os.path.basename(self.mezz_file))[0])
         self.video_root = os.path.join(self.settings.workdir, self.video_id)
         self.manifest = kwargs.get('manifest', self.video_id + '.m3u8')
         self.manifest_data = []
